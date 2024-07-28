@@ -19,7 +19,7 @@ import java.util.Map;
 public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
-    private final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
+    private final LocalDate minDate = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -41,7 +41,7 @@ public class FilmController {
             throw exception;
         }
 
-        if (film.getReleaseDate().isBefore(MIN_DATE)) {
+        if (film.getReleaseDate().isBefore(minDate)) {
             RuntimeException exception = new InvalidParameterException("дата релиза " +
                     "должна быть не раньше 28 декабря 1895 года");
             log.error("ошибка создания фильма.", exception);
@@ -79,7 +79,7 @@ public class FilmController {
             throw exception;
         }
 
-        if (newFilm.getReleaseDate().isBefore(MIN_DATE)) {
+        if (newFilm.getReleaseDate().isBefore(minDate)) {
             RuntimeException exception = new InvalidParameterException("дата релиза " +
                     "должна быть не раньше 28 декабря 1895 года");
             log.error("ошибка обновления фильма.", exception);
