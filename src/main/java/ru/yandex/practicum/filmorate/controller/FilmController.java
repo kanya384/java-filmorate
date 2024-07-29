@@ -1,14 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import exception.ConditionsNotMetException;
-import exception.InvalidParameterException;
 import exception.NotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +17,6 @@ import java.util.Map;
 public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
-    private final LocalDate minDate = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -53,22 +50,6 @@ public class FilmController {
             RuntimeException exception = new NotFoundException("нет фильма с таким id");
             log.error("ошибка обновления фильма.", exception);
             throw exception;
-        }
-
-        if (newFilm.getName() == null) {
-            newFilm.setName(oldFilm.getName());
-        }
-
-        if (newFilm.getDescription() == null) {
-            newFilm.setName(oldFilm.getDescription());
-        }
-
-        if (newFilm.getReleaseDate() == null) {
-            newFilm.setReleaseDate(oldFilm.getReleaseDate());
-        }
-
-        if (newFilm.getDuration() == null) {
-            newFilm.setDuration(oldFilm.getDuration());
         }
 
         films.put(newFilm.getId(), newFilm);
