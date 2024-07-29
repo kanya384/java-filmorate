@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
 
@@ -18,7 +18,10 @@ public class Film {
     @NotNull
     String name;
 
+    @Size(max=200)
     String description;
+
+    @ReleaseDateValidation
     LocalDate releaseDate;
 
     @Positive

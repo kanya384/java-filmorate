@@ -27,36 +27,6 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            RuntimeException exception = new ConditionsNotMetException("имейл не может быть пустым");
-            log.error("ошибка создания пользователя.", exception);
-            throw exception;
-        }
-
-        if (isEmailExists(user.getEmail())) {
-            RuntimeException exception = new DuplicateDataException("этот имейл уже используется");
-            log.error("ошибка создания пользователя.", exception);
-            throw exception;
-        }
-
-        if (isLoginExists(user.getLogin())) {
-            RuntimeException exception = new DuplicateDataException("этот логин уже используется");
-            log.error("ошибка создания пользователя.", exception);
-            throw exception;
-        }
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            RuntimeException exception = new InvalidParameterException("дата рождения не может быть в будущем");
-            log.error("ошибка создания пользователя.", exception);
-            throw exception;
-        }
-
-        if (user.getLogin().contains(" ")) {
-            RuntimeException exception = new InvalidParameterException("логин не может содержать пробелы");
-            log.error("ошибка создания пользователя.", exception);
-            throw exception;
-        }
-
         user.setId(getNextId());
 
         if (user.getName() == null || user.getName().isBlank()) {
@@ -83,30 +53,18 @@ public class UserController {
             throw exception;
         }
 
-        if (newUser.getEmail() != null && !oldUser.getEmail().equals(newUser.getEmail())
+        if (!oldUser.getEmail().equals(newUser.getEmail())
                 && isEmailExists(newUser.getEmail())) {
             RuntimeException exception = new DuplicateDataException("этот имейл уже используется");
             log.error("ошибка обновления пользователя.", exception);
             throw exception;
         }
 
-        if (newUser.getLogin() != null && !oldUser.getLogin().equals(newUser.getLogin())
-                && isLoginExists(newUser.getEmail())) {
+        if (!oldUser.getLogin().equals(newUser.getLogin())
+                && isLoginExists(newUser.getLogin())) {
             RuntimeException exception = new DuplicateDataException("этот логин уже используется");
             log.error("ошибка обновления пользователя.", exception);
             throw exception;
-        }
-
-        if (newUser.getEmail() == null) {
-            newUser.setEmail(oldUser.getEmail());
-        }
-
-        if (newUser.getLogin() == null) {
-            newUser.setLogin(oldUser.getLogin());
-        }
-
-        if (newUser.getBirthday() == null) {
-            newUser.setBirthday(oldUser.getBirthday());
         }
 
         users.put(newUser.getId(), newUser);

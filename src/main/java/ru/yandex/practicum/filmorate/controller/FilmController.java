@@ -29,32 +29,6 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
 
-        if (film.getName() == null || film.getName().isBlank()) {
-            RuntimeException exception = new ConditionsNotMetException("название фильма не может быть пустым");
-            log.error("ошибка создания фильма.", exception);
-            throw exception;
-        }
-
-        if (film.getDescription().length() > 200) {
-            RuntimeException exception = new InvalidParameterException("максимальная длина описания — 200 символов");
-            log.error("ошибка создания фильма.", exception);
-            throw exception;
-        }
-
-        if (film.getReleaseDate().isBefore(minDate)) {
-            RuntimeException exception = new InvalidParameterException("дата релиза " +
-                    "должна быть не раньше 28 декабря 1895 года");
-            log.error("ошибка создания фильма.", exception);
-            throw exception;
-        }
-
-        if (film.getDuration() < 0) {
-            RuntimeException exception = new InvalidParameterException("продолжительность фильма " +
-                    "должна быть положительным числом");
-            log.error("ошибка создания фильма.", exception);
-            throw exception;
-        }
-
         film.setId(getNextId());
 
         films.put(film.getId(), film);
@@ -69,26 +43,6 @@ public class FilmController {
 
         if (newFilm.getId() == null) {
             RuntimeException exception = new ConditionsNotMetException("id должен быть указан");
-            log.error("ошибка обновления фильма.", exception);
-            throw exception;
-        }
-
-        if (newFilm.getDescription().length() > 200) {
-            RuntimeException exception = new InvalidParameterException("максимальная длина описания — 200 символов");
-            log.error("ошибка обновления фильма.", exception);
-            throw exception;
-        }
-
-        if (newFilm.getReleaseDate().isBefore(minDate)) {
-            RuntimeException exception = new InvalidParameterException("дата релиза " +
-                    "должна быть не раньше 28 декабря 1895 года");
-            log.error("ошибка обновления фильма.", exception);
-            throw exception;
-        }
-
-        if (newFilm.getDuration() < 0) {
-            RuntimeException exception = new InvalidParameterException("продолжительность фильма " +
-                    "должна быть положительным числом");
             log.error("ошибка обновления фильма.", exception);
             throw exception;
         }

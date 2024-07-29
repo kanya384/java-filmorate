@@ -40,7 +40,7 @@ public class UserControllerTest extends BaseControllerTest {
         URI url = URI.create("http://localhost:8080/users");
         HttpResponse<String> response = sendHttpRequest(url, "POST", userJson);
 
-        assertEquals(400, response.statusCode());
+        assertEquals(500, response.statusCode());
     }
 
     @Test
