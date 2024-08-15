@@ -7,6 +7,7 @@ import lombok.Data;
 import validator.NoWhiteSpacesValidation;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -23,4 +24,6 @@ public class User {
 
     @Past
     LocalDate birthday;
+
+    Set<Long> friends;
 }

@@ -9,13 +9,15 @@ import lombok.Data;
 import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
  */
 @Data
 @Builder
-public class Film {
+public class Film implements Comparable<Film> {
     Long id;
 
     @NotNull
@@ -30,4 +32,19 @@ public class Film {
 
     @Positive
     Integer duration;
+
+    Set<Long> likes = new HashSet<>();
+
+    public void setLike(long userId) {
+        likes.add(userId);
+    }
+
+    public void removeLike(long userId) {
+        likes.remove(userId);
+    }
+
+    @Override
+    public int compareTo(Film otherFilm) {
+        return otherFilm.likes.size() - likes.size();
+    }
 }

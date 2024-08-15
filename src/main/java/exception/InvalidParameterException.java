@@ -1,10 +1,20 @@
 package exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+public class InvalidParameterException extends IllegalArgumentException {
+    private String parameter;
+    private String reason;
 
-public class InvalidParameterException extends ResponseStatusException {
-    public InvalidParameterException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+    public InvalidParameterException(String parameter, String reason) {
+        this.parameter = parameter;
+        this.reason = reason;
+    }
+
+
+    public String getParameter() {
+        return parameter;
+    }
+
+    public String getReason() {
+        return reason;
     }
 }

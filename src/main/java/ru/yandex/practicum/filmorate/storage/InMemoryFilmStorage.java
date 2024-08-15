@@ -41,6 +41,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
+    @Override
+    public Collection<Film> getPopularFilms(int count) {
+        return films.values()
+                .stream()
+                .sorted()
+                .limit(count)
+                .toList();
+    }
+
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()
