@@ -7,6 +7,7 @@ import lombok.Data;
 import validator.NoWhiteSpacesValidation;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -26,4 +27,22 @@ public class User {
     LocalDate birthday;
 
     Set<Long> friends;
+
+    public Set<Long> getFriends() {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        return friends;
+    }
+
+    public void addFriend(long userId) {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        friends.add(userId);
+    }
+
+    public void removeFriend(long userId) {
+        friends.remove(userId);
+    }
 }

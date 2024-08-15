@@ -1,95 +1,60 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import exception.ConditionsNotMetException;
-import exception.DuplicateDataException;
-import exception.NotFoundException;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-@Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    Map<Long, User> users = new HashMap<>();
+    UserService userService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public Collection<User> findAll() {
-        return users.values();
+        return userService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        user.setId(getNextId());
-
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-
-        users.put(user.getId(), user);
-        return user;
+        return userService.create(user);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
-        if (newUser.getId() == null) {
-            RuntimeException exception = new ConditionsNotMetException("id должен быть указан");
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        User oldUser = users.get(newUser.getId());
-        if (oldUser == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    newUser.getId()));
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        if (!oldUser.getEmail().equals(newUser.getEmail())
-                && isEmailExists(newUser.getEmail())) {
-            RuntimeException exception = new DuplicateDataException("этот имейл уже используется");
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        if (!oldUser.getLogin().equals(newUser.getLogin())
-                && isLoginExists(newUser.getLogin())) {
-            RuntimeException exception = new DuplicateDataException("этот логин уже используется");
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        users.put(newUser.getId(), newUser);
-
-        return newUser;
+        return userService.update(newUser);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable("id") long firstUserId, @PathVariable("friendId") long secondUserId) {
+        userService.addFriend(firstUserId, secondUserId);
     }
 
-    private boolean isEmailExists(String search) {
-        return users.values()
-                .stream()
-                .map(User::getEmail)
-                .anyMatch(email -> email.equals(search));
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable("id") long userId, @PathVariable("friendId") long friendId) {
+        userService.removeFriend(userId, friendId);
     }
 
-    private boolean isLoginExists(String search) {
-        return users.values()
-                .stream()
-                .map(User::getLogin)
-                .anyMatch(login -> login.equals(search));
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}/friends")
+    public Collection<User> getUserFriends(@PathVariable("id") long userId) {
+        return userService.getAllUsersFriends(userId);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriendsOfUsers(@PathVariable("id") long firstUserId, @PathVariable("otherId") long secondUserId) {
+        return userService.getCommonFriendsOfUsers(firstUserId, secondUserId);
+    }
+
 }

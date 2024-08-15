@@ -33,9 +33,12 @@ public class Film implements Comparable<Film> {
     @Positive
     Integer duration;
 
-    Set<Long> likes = new HashSet<>();
+    Set<Long> likes;
 
-    public void setLike(long userId) {
+    public void addLike(long userId) {
+        if (likes == null) {
+            likes = new HashSet<>();
+        }
         likes.add(userId);
     }
 
@@ -45,6 +48,16 @@ public class Film implements Comparable<Film> {
 
     @Override
     public int compareTo(Film otherFilm) {
-        return otherFilm.likes.size() - likes.size();
+        int a = 0;
+        int b = 0;
+        if (likes != null) {
+            a = likes.size();
+        }
+
+        if (otherFilm.likes != null) {
+            b = otherFilm.likes.size();
+        }
+
+        return b - a;
     }
 }

@@ -53,29 +53,55 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public void setLike(Long filmId, Long userId) {
+    public void addLike(Long filmId, Long userId) {
         Film film = filmStorage.getById(filmId);
-
-        User user = userService.getUserById(userId);
-
-        if (user != null) {
-            film.setLike(userId);
+        if (film == null) {
+            RuntimeException exception = new NotFoundException("не найден фильм с id = " + filmId);
+            log.error("ошибка добавления лайка фильма.", exception);
+            throw exception;
         }
 
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            RuntimeException exception = new NotFoundException("не найден пользователь с id = " + userId);
+            log.error("ошибка добавления лайка фильма.", exception);
+            throw exception;
+        }
+
+
+        film.addLike(userId);
+
+
         filmStorage.update(film);
+
+        log.info("лайк добавлен {}", film);
     }
 
     @Override
-    public void deleteLike(Long filmId, Long userId) {
+    public void removeLike(Long filmId, Long userId) {
         Film film = filmStorage.getById(filmId);
+        if (film == null) {
+            RuntimeException exception = new NotFoundException("не найден фильм с id = " + filmId);
+            log.error("ошибка удаления лайка фильма.", exception);
+            throw exception;
+        }
+
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            RuntimeException exception = new NotFoundException("не найден пользователь с id = " + userId);
+            log.error("ошибка удаления лайка фильма.", exception);
+            throw exception;
+        }
 
         film.removeLike(userId);
 
         filmStorage.update(film);
+
+        log.info("лайк удален {}", film);
     }
 
     @Override
     public Collection<Film> getPopularFilms(int count) {
-        return null;
+        return filmStorage.getPopularFilms(count);
     }
 }

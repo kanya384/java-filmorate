@@ -25,7 +25,7 @@ public class FilmControllerTest extends BaseControllerTest {
         URI url = URI.create("http://localhost:8080/films");
         HttpResponse<String> response = sendHttpRequest(url, "POST", filmJson);
 
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
     }
 
     @Test

@@ -13,7 +13,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        return films.put(getNextId(), film);
+        film.setId(getNextId());
+        films.put(film.getId(), film);
+        return film;
     }
 
     @Override
@@ -23,19 +25,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getById(long id) {
-        if (films.containsKey(id)) {
-            throw new RuntimeException("not founded");
-        }
-
         return films.get(id);
     }
 
     @Override
     public Film update(Film film) {
-        if (films.containsKey(film.getId())) {
-            throw new RuntimeException("nothing to update");
-        }
-
         films.put(film.getId(), film);
 
         return film;
