@@ -17,7 +17,7 @@ import java.util.Set;
  */
 @Data
 @Builder
-public class Film implements Comparable<Film> {
+public class Film {
     Long id;
 
     @NotNull
@@ -44,20 +44,5 @@ public class Film implements Comparable<Film> {
 
     public void removeLike(long userId) {
         likes.remove(userId);
-    }
-
-    @Override
-    public int compareTo(Film otherFilm) {
-        int a = 0;
-        int b = 0;
-        if (likes != null) {
-            a = likes.size();
-        }
-
-        if (otherFilm.likes != null) {
-            b = otherFilm.likes.size();
-        }
-
-        return b - a;
     }
 }

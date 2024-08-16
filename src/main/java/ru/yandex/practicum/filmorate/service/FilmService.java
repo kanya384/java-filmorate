@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface FilmService {
-    Collection<Film> findAll();
+    List<Film> findAll();
 
     Film create(Film film);
 
@@ -17,5 +17,5 @@ public interface FilmService {
 
     void removeLike(Long filmId, Long userId);
 
-    Collection<Film> getPopularFilms(int count);
+    List<Film> getPopularFilms(int count);
 }

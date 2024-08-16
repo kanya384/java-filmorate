@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
 
     @Override
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         return userStorage.findAll();
     }
 
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<User> getAllUsersFriends(long userId) {
+    public List<User> getAllUsersFriends(long userId) {
         User user = userStorage.getById(userId);
         if (user == null) {
             RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<User> getCommonFriendsOfUsers(long firstUserId, long secondUserId) {
+    public List<User> getCommonFriendsOfUsers(long firstUserId, long secondUserId) {
         return userStorage.getCommonFriendsOfUsers(firstUserId, secondUserId);
     }
 }

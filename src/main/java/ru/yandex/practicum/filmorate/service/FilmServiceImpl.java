@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class FilmServiceImpl implements FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
 
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         return filmStorage.findAll();
     }
 
@@ -101,7 +101,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Collection<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(int count) {
         return filmStorage.getPopularFilms(count);
     }
 }

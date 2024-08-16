@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface UserStorage {
-    Collection<User> findAll();
+    List<User> findAll();
 
     User create(User user);
 
@@ -17,7 +17,7 @@ public interface UserStorage {
 
     boolean isLoginExists(String search);
 
-    Collection<User> getAllUsersFriends(long userId);
+    List<User> getAllUsersFriends(long userId);
 
-    Collection<User> getCommonFriendsOfUsers(long firstUserId, long secondUserId);
+    List<User> getCommonFriendsOfUsers(long firstUserId, long secondUserId);
 }

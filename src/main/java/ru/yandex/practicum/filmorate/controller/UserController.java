@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         return userService.findAll();
     }
 
@@ -47,13 +47,13 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/friends")
-    public Collection<User> getUserFriends(@PathVariable("id") long userId) {
+    public List<User> getUserFriends(@PathVariable("id") long userId) {
         return userService.getAllUsersFriends(userId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriendsOfUsers(@PathVariable("id") long firstUserId, @PathVariable("otherId") long secondUserId) {
+    public List<User> getCommonFriendsOfUsers(@PathVariable("id") long firstUserId, @PathVariable("otherId") long secondUserId) {
         return userService.getCommonFriendsOfUsers(firstUserId, secondUserId);
     }
 

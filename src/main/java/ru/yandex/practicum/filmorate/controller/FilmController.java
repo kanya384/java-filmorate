@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -18,7 +18,7 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         return filmService.findAll();
     }
 
@@ -48,7 +48,7 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
-    public Collection<Film> getPopularFilms(@RequestParam("count") Optional<Integer> count) {
+    public List<Film> getPopularFilms(@RequestParam("count") Optional<Integer> count) {
         if (count.isPresent()) {
             return filmService.getPopularFilms(count.get());
         } else {
