@@ -9,6 +9,8 @@ import lombok.Data;
 import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -30,4 +32,17 @@ public class Film {
 
     @Positive
     Integer duration;
+
+    Set<Long> likes;
+
+    public void addLike(long userId) {
+        if (likes == null) {
+            likes = new HashSet<>();
+        }
+        likes.add(userId);
+    }
+
+    public void removeLike(long userId) {
+        likes.remove(userId);
+    }
 }
