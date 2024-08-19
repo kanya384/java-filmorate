@@ -6,80 +6,14 @@ Template repository for Filmorate project.
 
 ![Screenshot of a comment on a GitHub issue showing an image, added in the Markdown, of an Octocat smiling and raising a tentacle.](./schema.png)
 
-```sql
-CREATE TYPE mpa_film_rating AS ENUM (
-  'G',
-  'PG',
-  'PG_13',
-  'R',
-  'NC_17'
-);
+### `mpa_rating`
 
-CREATE TYPE friendship_status AS ENUM (
-  'PENDING',
-  'APPROVED'
-);
+Содержит информацию о рейтингах Motion Picture Association.
 
-CREATE TABLE film (
-  film_id bigserial PRIMARY KEY,
-  name varchar NOT NULL,
-  description varchar(200),
-  release_date date,
-  duration integer,
-  rating mpa_film_rating
-);
+Таблица состоит из полей:
 
-CREATE TABLE category (
-  category_id serial PRIMARY KEY,
-  name varchar NOT NULL
-);
-
-CREATE TABLE film_category (
-  film_id bigint,
-  category_id bigint,
-  PRIMARY KEY (film_id, category_id),
-  CONSTRAINT fc_fk_film
-    FOREIGN KEY(film_id) 
-      REFERENCES film(film_id) ON DELETE CASCADE,
-  CONSTRAINT fc_fk_category
-    FOREIGN KEY(category_id) 
-      REFERENCES category(category_id) ON DELETE CASCADE
-);
-
-CREATE TABLE "user" (
-  user_id bigserial PRIMARY KEY,
-  email varchar NOT NULL,
-  login varchar NOT NULL,
-  name varchar,
-  birthday date NOT NULL
-);
-
-
-CREATE TABLE film_likes (
-  film_id bigint,
-  user_id bigint,
-  PRIMARY KEY (film_id, user_id),
-  CONSTRAINT fl_fk_film_id
-    FOREIGN KEY(film_id) 
-      REFERENCES film(film_id) ON DELETE CASCADE,
-  CONSTRAINT fl_fk_user_id
-    FOREIGN KEY(user_id) 
-      REFERENCES "user"(user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE users_friendship (
-  initiator_id bigint,
-  friend_id bigint,
-  status friendship_status,
-  PRIMARY KEY (initiator_id, friend_id),
-  CONSTRAINT uf_fk_initiator
-      FOREIGN KEY(initiator_id) 
-        REFERENCES "user"(user_id) ON DELETE CASCADE,
-  CONSTRAINT uf_fk_friend
-    FOREIGN KEY(friend_id) 
-      REFERENCES "user"(user_id) ON DELETE CASCADE
-);
-```
+- `rating_id` — первичный ключ идентификатор рейтинга;
+- `name` — название рейтинга;
 
 ### `film`
 
@@ -88,33 +22,31 @@ CREATE TABLE users_friendship (
 Таблица состоит из полей:
 
 - первичный ключ `film_id` — идентификатор фильма;
-- `name` — название фильма;
+- `title` — название фильма;
 - `description` — описание фильма;
 - `release_date` — дата выхода;
 - `duration` — продолжительность фильма в минутах;
-- `rating` — возрастной рейтинг, например:
-    - `PG` — детям рекомендуется смотреть такой фильм с родителями;
-    - `PG-13` — детям до 13 лет смотреть такой фильм нежелательно.
+- `rating_id` — идентификатор рейтинга из mpa_rating;
 
-### `category`
+### `genre`
 
-Содержит информацию о категориях фильмов.
+Содержит информацию о жанрах фильмов.
 
 Таблица состоит из полей:
 
-- первичный ключ `category_id` — идентификатор категории;
-- `name` — название фильма;
+- первичный ключ `genre_id` — идентификатор жанра;
+- `name` — название жанра;
 
-### `film_category`
+### `film_genre`
 
-Содержит информацию о категориях фильмов из таблицы film.
+Содержит информацию о жанрах фильмов из таблицы film.
 
 Таблица состоит из полей:
 
-- `film_id` —идентификатор фильма из film;
-- `category_id` — идентификатор категории из category;
+- `film_id` — идентификатор фильма из film;
+- `genre_id` — идентификатор жанра из genre;
 
-В этой таблице составной первичный ключ по полям film_id и category_id
+В этой таблице составной первичный ключ по полям film_id и genre_id
 
 ### `film_likes`
 
@@ -147,9 +79,9 @@ CREATE TABLE users_friendship (
 
 - `initiator_id` — пользователь, который отправил запрос на добавление в друзья;
 - `friend_id` — пользователь которому отправлен запрос в друзья;
-- `status` — статус запроса:
-    - `PENDING` — ожидается подтверждение;
-    - `APPROVED` — подтверждено.
+- `status` — статус запроса, например (`PENDING`, `APPROVED`)
+
+В этой таблице составной первичный ключ по полям initiator_id и friend_id
 
 ## Примеры запросов к бд
 
