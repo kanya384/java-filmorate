@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import exception.BadRequestException;
 import exception.ConditionsNotMetException;
 import exception.DuplicateDataException;
 import exception.NotFoundException;
@@ -45,6 +46,12 @@ public class ErrorHandler {
             sb.append(String.format("%s - %s", fieldError.getField(), fieldError.getDefaultMessage()));
         });
         return new ErrorResponse(String.format("Ошибка(-и) валидации: %s", sb));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final BadRequestException e) {
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
