@@ -59,6 +59,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addFriend(long firstUserId, long secondUserId) {
+        Optional<User> user1 = userStorage.getById(firstUserId);
+        if (user1.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + firstUserId);
+        }
+
+        Optional<User> user2 = userStorage.getById(secondUserId);
+        if (user2.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + secondUserId);
+        }
         userStorage.addFriendToUser(firstUserId, secondUserId);
     }
 

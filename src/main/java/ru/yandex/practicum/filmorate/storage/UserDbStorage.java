@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import exception.InternalServerException;
-import exception.NotFoundException;
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -93,18 +91,10 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     @Override
     public void addFriendToUser(long userId, long friendId) {
-        try {
-            update(ADD_FRIEND_TO_USER_QUERY,
-                    userId,
-                    friendId,
-                    FriendshipStatus.APPROVED.toString());
-        } catch (DataAccessException e) {
-            if (e.getRootCause().getMessage().contains("Нарушение ссылочной целостности")) {
-                throw new NotFoundException("не найден пользователь");
-            }
-            throw e;
-        }
-
+        update(ADD_FRIEND_TO_USER_QUERY,
+                userId,
+                friendId,
+                FriendshipStatus.APPROVED.toString());
     }
 
     @Override
