@@ -1,26 +1,22 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Past;
-import lombok.Builder;
 import lombok.Data;
 import validator.NoWhiteSpacesValidation;
 
 import java.time.LocalDate;
 
 @Data
-@Builder
-public class User {
-    Long id;
-
-    @Email
-    String email;
+public class NewUserRequest {
+    private String name;
 
     @NoWhiteSpacesValidation
-    String login;
+    private String login;
 
-    String name;
+    @Email
+    private String email;
 
     @Past
-    LocalDate birthday;
+    private LocalDate birthday;
 }

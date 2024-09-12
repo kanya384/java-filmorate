@@ -1,143 +1,104 @@
 package ru.yandex.practicum.filmorate.service;
 
-import exception.ConditionsNotMetException;
-import exception.DuplicateDataException;
 import exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UserResponse;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
 
     @Override
-    public List<User> findAll() {
-        return userStorage.findAll();
+    public List<UserResponse> findAll() {
+        return userStorage.findAll().stream().map(UserMapper::mapToUserResponse).toList();
     }
 
     @Override
-    public User create(User user) {
-        return userStorage.create(user);
+    public UserResponse create(NewUserRequest request) {
+        return UserMapper.mapToUserResponse(userStorage.create(UserMapper.mapToUser(request)));
     }
 
     @Override
-    public User getById(long id) {
-        return userStorage.getById(id);
+    public UserResponse getById(long id) {
+        return userStorage.getById(id).map(UserMapper::mapToUserResponse)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + id));
     }
 
     @Override
-    public User update(User user) {
-        if (user.getId() == null) {
-            RuntimeException exception = new ConditionsNotMetException("id должен быть указан");
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        User oldUser = userStorage.getById(user.getId());
-        if (oldUser == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    user.getId()));
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        if (!oldUser.getEmail().equals(user.getEmail())
-                && userStorage.isEmailExists(user.getEmail())) {
-            RuntimeException exception = new DuplicateDataException("этот имейл уже используется");
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
-
-        if (!oldUser.getLogin().equals(user.getLogin())
-                && userStorage.isLoginExists(user.getLogin())) {
-            RuntimeException exception = new DuplicateDataException("этот логин уже используется");
-            log.error("ошибка обновления пользователя.", exception);
-            throw exception;
-        }
+    public UserResponse update(UpdateUserRequest request) {
+        User updatedUser = userStorage.getById(request.getId())
+                .map(film -> UserMapper.updateUserFields(film, request))
+                .orElseThrow(() -> new NotFoundException("не найден пользователь с id = " + request.getId()));
 
 
-        log.info("обновлен пользователь {}", user);
+        userStorage.update(updatedUser);
 
-        return userStorage.update(user);
+        log.info("обновлен пользователь {}", updatedUser);
+
+        return UserMapper.mapToUserResponse(updatedUser);
     }
 
     @Override
-    public User getUserById(long id) {
-        return userStorage.getById(id);
+    public UserResponse getUserById(long id) {
+        return userStorage.getById(id)
+                .map(UserMapper::mapToUserResponse)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + id));
     }
 
     @Override
     public void addFriend(long firstUserId, long secondUserId) {
-        User firstUser = userStorage.getById(firstUserId);
-        if (firstUser == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    firstUserId));
-            log.error("ошибка добавления друга для пользователя.", exception);
-            throw exception;
+        Optional<User> user1 = userStorage.getById(firstUserId);
+        if (user1.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + firstUserId);
         }
 
-        User secondUser = userStorage.getById(secondUserId);
-
-        if (secondUser == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    secondUserId));
-            log.error("ошибка добавления друга для пользователя.", exception);
-            throw exception;
+        Optional<User> user2 = userStorage.getById(secondUserId);
+        if (user2.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + secondUserId);
         }
-
-        firstUser.addFriend(secondUserId);
-        secondUser.addFriend(firstUserId);
-
-        userStorage.update(firstUser);
-        userStorage.update(secondUser);
+        userStorage.addFriendToUser(firstUserId, secondUserId);
     }
 
     @Override
     public void removeFriend(long firstUserId, long secondUserId) {
-        User firstUser = userStorage.getById(firstUserId);
-        if (firstUser == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    firstUserId));
-            log.error("ошибка удаления друга пользователя.", exception);
-            throw exception;
+        Optional<User> user1 = userStorage.getById(firstUserId);
+        if (user1.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + firstUserId);
         }
 
-        User secondUser = userStorage.getById(secondUserId);
-        if (secondUser == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    secondUserId));
-            log.error("ошибка удаления друга для пользователя.", exception);
-            throw exception;
+        Optional<User> user2 = userStorage.getById(secondUserId);
+        if (user2.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + secondUserId);
         }
-
-        firstUser.removeFriend(secondUserId);
-        secondUser.removeFriend(firstUserId);
-
-        userStorage.update(firstUser);
-        userStorage.update(secondUser);
+        userStorage.removeFriendOfUser(firstUserId, secondUserId);
     }
 
     @Override
-    public List<User> getAllUsersFriends(long userId) {
-        User user = userStorage.getById(userId);
-        if (user == null) {
-            RuntimeException exception = new NotFoundException(String.format("user с id = %d не найден",
-                    userId));
-            log.error("ошибка получения друзей пользователя.", exception);
-            throw exception;
+    public List<UserResponse> getAllUsersFriends(long userId) {
+        Optional<User> user1 = userStorage.getById(userId);
+        if (user1.isEmpty()) {
+            throw new NotFoundException("не найден пользователь с id = " + userId);
         }
-        return userStorage.getAllUsersFriends(userId);
+
+        return userStorage.getAllUsersFriends(userId).stream()
+                .map(UserMapper::mapToUserResponse).toList();
     }
 
     @Override
-    public List<User> getCommonFriendsOfUsers(long firstUserId, long secondUserId) {
-        return userStorage.getCommonFriendsOfUsers(firstUserId, secondUserId);
+    public List<UserResponse> getCommonFriendsOfUsers(long firstUserId, long secondUserId) {
+        return userStorage.getCommonFriendsOfUsers(firstUserId, secondUserId).stream()
+                .map(UserMapper::mapToUserResponse).toList();
     }
 }

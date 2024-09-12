@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto.film;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,29 +11,21 @@ import validator.ReleaseDateValidation;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Film.
- */
 @Data
 @Builder
-public class Film {
-
-    Long id;
-
+public class NewFilmRequest {
     @NotNull
     @NotBlank
-    String title;
+    private String name;
 
     @Size(max = 200)
-    String description;
+    private String description;
 
     @ReleaseDateValidation
-    LocalDate releaseDate;
+    private LocalDate releaseDate;
 
     @Positive
-    Integer duration;
-
-    MpaRating mpa;
-
-    List<Genre> genres;
+    private Integer duration;
+    private MpaRequest mpa;
+    private List<GenreRequest> genres;
 }

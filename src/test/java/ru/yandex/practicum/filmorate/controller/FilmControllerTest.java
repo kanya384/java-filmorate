@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.dto.film.MpaRequest;
+import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.io.IOException;
@@ -14,7 +17,7 @@ public class FilmControllerTest extends BaseControllerTest {
 
     @Test
     public void shoulCreateFilm() throws IOException, InterruptedException {
-        Film film = Film.builder()
+        NewFilmRequest film = NewFilmRequest.builder()
                 .name("звездные войны")
                 .description("скрытая угроза")
                 .releaseDate(LocalDate.now())
@@ -24,7 +27,6 @@ public class FilmControllerTest extends BaseControllerTest {
 
         URI url = URI.create("http://localhost:8080/films");
         HttpResponse<String> response = sendHttpRequest(url, "POST", filmJson);
-
         assertEquals(201, response.statusCode());
     }
 
@@ -46,7 +48,7 @@ public class FilmControllerTest extends BaseControllerTest {
     @Test
     public void shoulNotCreateFilmWithTooOldReleaseDate() throws IOException, InterruptedException {
         Film film = Film.builder()
-                .name("звездные войны")
+                .title("звездные войны")
                 .description("скрытая угроза")
                 .releaseDate(LocalDate.of(1700, 1, 1))
                 .duration(1).build();
@@ -62,7 +64,7 @@ public class FilmControllerTest extends BaseControllerTest {
     @Test
     public void shoulNotCreateFilmWithLongDescription() throws IOException, InterruptedException {
         Film film = Film.builder()
-                .name("звездные войны")
+                .title("звездные войны")
                 .description("Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
                         "sed do eiusmod tempor incididunt ut labore" +
                         "dolore magna aliqua. Ut enim ad minim veniam, " +
@@ -82,7 +84,7 @@ public class FilmControllerTest extends BaseControllerTest {
     @Test
     public void shoulNotCreateFilmWithNegativeDuration() throws IOException, InterruptedException {
         Film film = Film.builder()
-                .name("звездные войны")
+                .title("звездные войны")
                 .description("скрытая угроза")
                 .releaseDate(LocalDate.now())
                 .duration(-11).build();
@@ -97,7 +99,7 @@ public class FilmControllerTest extends BaseControllerTest {
 
     @Test
     public void shoulUpdateExistingFilm() throws IOException, InterruptedException {
-        Film film = Film.builder()
+        NewFilmRequest film = NewFilmRequest.builder()
                 .name("звездные войны")
                 .description("скрытая угроза")
                 .releaseDate(LocalDate.now())
@@ -106,11 +108,17 @@ public class FilmControllerTest extends BaseControllerTest {
 
         URI url = URI.create("http://localhost:8080/films");
         sendHttpRequest(url, "POST", gson.toJson(film));
+        MpaRequest mpa = new MpaRequest();
+        mpa.setId(1L);
+        UpdateFilmRequest updateFilmRequest = UpdateFilmRequest.builder()
+                .id(1)
+                .name("звездные войны")
+                .description("скрытая угроза")
+                .releaseDate(LocalDate.now())
+                .mpa(mpa)
+                .duration(1).build();
 
-        film.setId(1L);
-        film.setName("new film");
-
-        String filmJson = gson.toJson(film);
+        String filmJson = gson.toJson(updateFilmRequest);
 
         url = URI.create("http://localhost:8080/films");
         HttpResponse<String> response = sendHttpRequest(url, "PUT", filmJson);
@@ -120,7 +128,7 @@ public class FilmControllerTest extends BaseControllerTest {
 
     @Test
     public void shoulNotUpdateNotExistingFilm() throws IOException, InterruptedException {
-        Film film = Film.builder()
+        UpdateFilmRequest film = UpdateFilmRequest.builder()
                 .id(3L)
                 .name("звездные войны")
                 .description("скрытая угроза")
