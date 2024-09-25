@@ -71,7 +71,7 @@ class ReviewDbStorageTests {
         reviewStorage.create(review);
         reviewStorage.create(review);
 
-        List<Review> films = reviewStorage.findAll(2);
+        List<Review> films = reviewStorage.findAll(filmId, 2);
 
         assertThat(films.size()).isEqualTo(2);
     }

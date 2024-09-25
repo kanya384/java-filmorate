@@ -35,6 +35,7 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
                                                                             ELSE 0 END) AS useful
             FROM REVIEWS AS r
             LEFT JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
+            WHERE r.film_id = ?
             GROUP BY r.ID
             LIMIT ?;
             """;
@@ -65,8 +66,8 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
     }
 
     @Override
-    public List<Review> findAll(int count) {
-        return jdbc.query(FIND_ALL_QUERY, mapper, count);
+    public List<Review> findAll(long filmId, int count) {
+        return jdbc.query(FIND_ALL_QUERY, mapper, filmId, count);
     }
 
     @Override
