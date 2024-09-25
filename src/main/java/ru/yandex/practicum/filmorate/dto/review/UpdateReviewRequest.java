@@ -9,6 +9,4 @@ public class UpdateReviewRequest {
     private long id;
     private String content;
     private boolean isPositive;
-    private long userId;
-    private long filmId;
 }
