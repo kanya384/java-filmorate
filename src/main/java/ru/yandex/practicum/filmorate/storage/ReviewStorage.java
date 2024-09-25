@@ -11,11 +11,15 @@ public interface ReviewStorage {
 
     List<Review> findAll(long filmId, int count);
 
+    List<Review> findAll(int count);
+
     Optional<Review> getById(long id);
 
     Review update(Review review);
 
-    void upsertLikeToReview(Long reviewId, Long userId, LikeType likeType);
+    void deleteReview(Long reviewId);
+
+    void insertLikeDislikeToReview(Long reviewId, Long userId, LikeType likeType);
 
     void removeLikeFromReview(Long filmId, Long userId, LikeType likeType);
 }

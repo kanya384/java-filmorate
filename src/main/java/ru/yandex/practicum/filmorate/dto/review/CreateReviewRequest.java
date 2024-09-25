@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dto.review;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,7 +8,13 @@ import lombok.Data;
 @Builder
 public class CreateReviewRequest {
     private String content;
-    private boolean isPositive;
-    private long userId;
-    private long filmId;
+
+    @NotNull
+    private Boolean isPositive;
+
+    @NotNull
+    private Long userId;
+
+    @NotNull
+    private Long filmId;
 }

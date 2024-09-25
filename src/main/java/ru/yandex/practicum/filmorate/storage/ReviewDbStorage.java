@@ -39,14 +39,28 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
             GROUP BY r.ID
             LIMIT ?;
             """;
+    private static final String FIND_ALL_QUERY_WITHOUT_FILM_ID = """
+            SELECT r.id, r.CONTENT, r.IS_POSITIVE, r.USER_ID, r.FILM_ID, sum(CASE
+                                                                            WHEN rl.LIKE_TYPE = 'LIKE' THEN 1
+                                                                            WHEN rl.LIKE_TYPE = 'DISLIKE' THEN -1
+                                                                            ELSE 0 END) AS useful
+            FROM REVIEWS AS r
+            LEFT JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
+            GROUP BY r.ID
+            LIMIT ?;
+            """;
 
     private static final String UPDATE_QUERY = "UPDATE reviews " +
             "SET content = ?, is_positive = ? WHERE id = ?";
 
-    private static final String UPSERT_LIKE_QUERY = "MERGE INTO REVIEW_LIKES (REVIEW_ID, USER_ID, LIKE_TYPE) " +
+    private static final String INSERT_LIKE_DISLIKE_QUERY = "INSERT INTO REVIEW_LIKES (REVIEW_ID, USER_ID, LIKE_TYPE) " +
             "VALUES(?, ?, ?);";
 
-    private static final String REMOVE_LIKE_FROM_REVIEW_QUERY = "DELETE FROM REVIEW_LIKES WHERE review_id = ? AND user_id = ? AND like_type = ?";
+    private static final String REMOVE_REVIEW_QUERY = "DELETE FROM REVIEWS " +
+            "WHERE id = ?";
+
+    private static final String REMOVE_LIKE_FROM_REVIEW_QUERY = "DELETE FROM REVIEW_LIKES " +
+            "WHERE review_id = ? AND user_id = ? AND like_type = ?";
 
     public ReviewDbStorage(JdbcTemplate jdbc, RowMapper<Review> mapper) {
         super(jdbc, mapper);
@@ -71,6 +85,11 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
     }
 
     @Override
+    public List<Review> findAll(int count) {
+        return jdbc.query(FIND_ALL_QUERY_WITHOUT_FILM_ID, mapper, count);
+    }
+
+    @Override
     public Optional<Review> getById(long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
@@ -88,9 +107,16 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
     }
 
     @Override
-    public void upsertLikeToReview(Long reviewId, Long userId, LikeType likeType) {
+    public void deleteReview(Long reviewId) {
+        if (!delete(REMOVE_REVIEW_QUERY, reviewId)) {
+            throw new InternalServerException("Не найден отзыв для удаления");
+        }
+    }
+
+    @Override
+    public void insertLikeDislikeToReview(Long reviewId, Long userId, LikeType likeType) {
         update(
-                UPSERT_LIKE_QUERY,
+                INSERT_LIKE_DISLIKE_QUERY,
                 reviewId,
                 userId,
                 likeType.toString()

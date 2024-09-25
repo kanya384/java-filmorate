@@ -12,7 +12,7 @@ public class ReviewMapper {
     public static Review mapToReview(CreateReviewRequest request) {
         return Review.builder()
                 .content(request.getContent())
-                .isPositive(request.isPositive())
+                .isPositive(request.getIsPositive())
                 .filmId(request.getFilmId())
                 .userId(request.getUserId())
                 .build();
@@ -25,6 +25,7 @@ public class ReviewMapper {
                 .isPositive(review.getIsPositive())
                 .filmId(review.getFilmId())
                 .userId(review.getUserId())
+                .useful(review.getUseful())
                 .build();
     }
 

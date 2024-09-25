@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
-import exception.BadRequestException;
 import exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.review.CreateReviewRequest;
 import ru.yandex.practicum.filmorate.dto.review.ReviewResponse;
 import ru.yandex.practicum.filmorate.dto.review.UpdateReviewRequest;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
@@ -23,25 +23,30 @@ public class ReviewServiceImpl implements ReviewService {
     private ReviewStorage reviewStorage;
 
     @Override
-    public ReviewResponse create(Review review) {
+    public ReviewResponse create(CreateReviewRequest review) {
         try {
             filmService.getById(review.getFilmId());
         } catch (Exception e) {
-            throw new BadRequestException("не найден фильм с id = " + review.getFilmId());
+            throw new NotFoundException("не найден фильм с id = " + review.getFilmId());
         }
 
         try {
             userService.getById(review.getUserId());
         } catch (Exception e) {
-            throw new BadRequestException("не найден user с id = " + review.getFilmId());
+            throw new NotFoundException("не найден user с id = " + review.getFilmId());
         }
 
-        return ReviewMapper.mapToReviewResponse(reviewStorage.create(review));
+        return ReviewMapper.mapToReviewResponse(reviewStorage.create(ReviewMapper.mapToReview(review)));
     }
 
     @Override
     public List<ReviewResponse> findAll(long filmId, int count) {
         return reviewStorage.findAll(filmId, count).stream().map(ReviewMapper::mapToReviewResponse).toList();
+    }
+
+    @Override
+    public List<ReviewResponse> findAll(int count) {
+        return reviewStorage.findAll(count).stream().map(ReviewMapper::mapToReviewResponse).toList();
     }
 
     @Override
@@ -62,8 +67,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void upsertLikeToReview(Long reviewId, Long userId, LikeType likeType) {
-        reviewStorage.upsertLikeToReview(reviewId, userId, likeType);
+    public void deleteReview(Long reviewId) {
+        reviewStorage.deleteReview(reviewId);
+    }
+
+    @Override
+    public void insertLikeDislikeToReview(Long reviewId, Long userId, LikeType likeType) {
+        reviewStorage.insertLikeDislikeToReview(reviewId, userId, likeType);
     }
 
     @Override

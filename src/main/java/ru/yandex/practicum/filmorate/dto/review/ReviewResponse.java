@@ -10,6 +10,7 @@ public class ReviewResponse {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long reviewId;
     private String content;
+    @JsonProperty("isPositive")
     private boolean isPositive;
     private long userId;
     private long filmId;
