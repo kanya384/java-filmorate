@@ -53,7 +53,7 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
     private static final String UPDATE_QUERY = "UPDATE reviews " +
             "SET content = ?, is_positive = ? WHERE id = ?";
 
-    private static final String INSERT_LIKE_DISLIKE_QUERY = "INSERT INTO REVIEW_LIKES (REVIEW_ID, USER_ID, LIKE_TYPE) " +
+    private static final String INSERT_LIKE_DISLIKE_QUERY = "MERGE INTO REVIEW_LIKES (REVIEW_ID, USER_ID, LIKE_TYPE) " +
             "VALUES(?, ?, ?);";
 
     private static final String REMOVE_REVIEW_QUERY = "DELETE FROM REVIEWS " +

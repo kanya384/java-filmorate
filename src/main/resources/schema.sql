@@ -58,5 +58,5 @@ CREATE TABLE IF NOT EXISTS review_likes (
     review_id BIGINT REFERENCES reviews(id) ON DELETE CASCADE,
     user_id BIGINT REFERENCES "user"(id) ON DELETE CASCADE,
     like_type varchar NOT NULL,
-    PRIMARY KEY (review_id, user_id, like_type)
+    PRIMARY KEY (review_id, user_id)
 );

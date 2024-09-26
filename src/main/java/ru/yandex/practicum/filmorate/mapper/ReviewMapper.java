@@ -25,7 +25,7 @@ public class ReviewMapper {
                 .isPositive(review.getIsPositive())
                 .filmId(review.getFilmId())
                 .userId(review.getUserId())
-                .useful(review.getUseful())
+                .useful(review.getUseful() != null ? review.getUseful() : 0)
                 .build();
     }
 

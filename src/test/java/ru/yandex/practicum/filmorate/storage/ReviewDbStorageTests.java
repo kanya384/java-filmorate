@@ -141,7 +141,7 @@ class ReviewDbStorageTests {
 
         review = reviewStorage.create(review);
 
-        reviewStorage.upsertLikeToReview(review.getId(), userId, LikeType.LIKE);
+        reviewStorage.insertLikeDislikeToReview(review.getId(), userId, LikeType.LIKE);
 
         final Long reviewId = review.getId();
 
@@ -167,7 +167,7 @@ class ReviewDbStorageTests {
 
         review = reviewStorage.create(review);
 
-        reviewStorage.upsertLikeToReview(review.getId(), userId, LikeType.LIKE);
+        reviewStorage.insertLikeDislikeToReview(review.getId(), userId, LikeType.LIKE);
 
         reviewStorage.removeLikeFromReview(review.getId(), userId, LikeType.LIKE);
 

@@ -36,7 +36,8 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotFoundException("не найден user с id = " + review.getFilmId());
         }
 
-        return ReviewMapper.mapToReviewResponse(reviewStorage.create(ReviewMapper.mapToReview(review)));
+        Review result = reviewStorage.create(ReviewMapper.mapToReview(review));
+        return ReviewMapper.mapToReviewResponse(result);
     }
 
     @Override
