@@ -59,4 +59,10 @@ public class UserController {
         return userService.getCommonFriendsOfUsers(firstUserId, secondUserId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public void removeUser(@PathVariable("id") long userId) {
+        userService.removeUser(userId);
+    }
+
 }

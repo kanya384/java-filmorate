@@ -86,6 +86,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void removeUser(Long userId) {
+        userStorage.RemoveUsersByQuery(userId);
+
+        log.info("Пользователь с id = {} удален", userId);
+    }
+
+    @Override
     public List<UserResponse> getAllUsersFriends(long userId) {
         Optional<User> user1 = userStorage.getById(userId);
         if (user1.isEmpty()) {

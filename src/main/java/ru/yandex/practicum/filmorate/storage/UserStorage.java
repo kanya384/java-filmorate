@@ -19,6 +19,8 @@ public interface UserStorage {
 
     void removeFriendOfUser(long userId, long friendId);
 
+    void RemoveUsersByQuery(Long userId);
+
     void updateFriendshipStatus(long userId, long friendId, FriendshipStatus newStatus);
 
     List<User> getAllUsersFriends(long userId);

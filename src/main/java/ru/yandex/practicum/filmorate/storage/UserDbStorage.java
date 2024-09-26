@@ -49,6 +49,8 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String UPDATE_FRIENDSHIP_STATUS = "ALTER TABLE users_friendship " +
             "SET status = ? WHERE initiator_id = ? and friend_id = ?";
 
+    private static final String REMOVE_USER_BY_QUERY = "DELETE FROM \"user\" WHERE id = ?";
+
 
     public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -103,6 +105,13 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             update(REMOVE_USERS_FRIEND_QUERY, userId, friendId);
         } catch (InternalServerException e) {
             //do nothing
+        }
+    }
+
+    @Override
+    public void RemoveUsersByQuery(Long userId) {
+        if (!delete(REMOVE_USER_BY_QUERY, userId)) {
+            throw new InternalServerException("Пользователь для удаления не найден");
         }
     }
 
