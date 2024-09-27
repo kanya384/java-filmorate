@@ -24,17 +24,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse create(CreateReviewRequest review) {
-        try {
-            filmService.getById(review.getFilmId());
-        } catch (Exception e) {
-            throw new NotFoundException("не найден фильм с id = " + review.getFilmId());
-        }
-
-        try {
-            userService.getById(review.getUserId());
-        } catch (Exception e) {
-            throw new NotFoundException("не найден user с id = " + review.getFilmId());
-        }
+        filmService.getById(review.getFilmId());
+        userService.getById(review.getUserId());
 
         Review result = reviewStorage.create(ReviewMapper.mapToReview(review));
         return ReviewMapper.mapToReviewResponse(result);
