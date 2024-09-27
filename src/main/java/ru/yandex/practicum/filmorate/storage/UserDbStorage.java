@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import exception.InternalServerException;
+import exception.NotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -109,9 +110,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     }
 
     @Override
-    public void RemoveUsersByQuery(Long userId) {
+    public void removeUserById(Long userId) {
         if (!delete(REMOVE_USER_BY_QUERY, userId)) {
-            throw new InternalServerException("Пользователь для удаления не найден");
+            throw new NotFoundException("Пользователь для удаления не найден");
         }
     }
 

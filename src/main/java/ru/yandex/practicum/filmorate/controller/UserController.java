@@ -23,6 +23,12 @@ public class UserController {
         return userService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public UserResponse findUserById(@PathVariable("id") long userId) {
+        return userService.getUserById(userId);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public UserResponse create(@Valid @RequestBody NewUserRequest user) {

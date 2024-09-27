@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUser(Long userId) {
-        userStorage.RemoveUsersByQuery(userId);
+        userStorage.removeUserById(userId);
 
         log.info("Пользователь с id = {} удален", userId);
     }
