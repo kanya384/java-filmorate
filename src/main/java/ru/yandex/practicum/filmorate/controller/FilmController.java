@@ -55,6 +55,12 @@ public class FilmController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public void removeFilm(@PathVariable("id") long filmId) {
+        filmService.removeFilm(filmId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
     public List<FilmResponse> getPopularFilms(@RequestParam("count") Optional<Integer> count) {
         if (count.isPresent()) {

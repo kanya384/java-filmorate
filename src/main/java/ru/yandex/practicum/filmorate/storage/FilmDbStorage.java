@@ -59,6 +59,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private static final String REMOVE_LIKE_FROM_FILM_QUERY = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
 
+    private static final String REMOVE_FILM_BY_ID_QUERY = "DELETE FROM films WHERE id = ?";
+
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -124,6 +126,13 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         if (!delete(REMOVE_LIKE_FROM_FILM_QUERY, filmId, userId)) {
             throw new InternalServerException("Не найден лайк для удаления");
+        }
+    }
+
+    @Override
+    public void removeFilmById(Long filmId) {
+        if (!delete(REMOVE_FILM_BY_ID_QUERY, filmId)) {
+            throw new InternalServerException("Фильм для удаления не найден");
         }
     }
 

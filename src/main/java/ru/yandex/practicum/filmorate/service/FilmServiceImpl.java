@@ -108,6 +108,14 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public void removeFilm(Long filmId) {
+
+        filmStorage.removeFilmById(filmId);
+
+        log.info("фильм с id = {} удален", filmId);
+    }
+
+    @Override
     public List<FilmResponse> getPopularFilms(int count) {
         return filmStorage.getPopularFilms(count)
                 .stream()

@@ -23,6 +23,12 @@ public class UserController {
         return userService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public UserResponse findUserById(@PathVariable("id") long userId) {
+        return userService.getUserById(userId);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public UserResponse create(@Valid @RequestBody NewUserRequest user) {
@@ -57,6 +63,12 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<UserResponse> getCommonFriendsOfUsers(@PathVariable("id") long firstUserId, @PathVariable("otherId") long secondUserId) {
         return userService.getCommonFriendsOfUsers(firstUserId, secondUserId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public void removeUser(@PathVariable("id") long userId) {
+        userService.removeUser(userId);
     }
 
 }
