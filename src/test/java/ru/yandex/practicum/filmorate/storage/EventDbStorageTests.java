@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Random;
 
@@ -32,7 +34,7 @@ public class EventDbStorageTests {
                 .operation(Operation.ADD)
                 .userId(userId)
                 .entityId(1L)
-                .createdAt(LocalDate.now())
+                .createdAt(Timestamp.from(Instant.now()))
                 .build();
 
         assertDoesNotThrow(() -> {
