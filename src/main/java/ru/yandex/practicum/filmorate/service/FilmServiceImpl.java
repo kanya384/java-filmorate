@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -25,6 +26,7 @@ public class FilmServiceImpl implements FilmService {
     private FilmStorage filmStorage;
     private GenreService genreService;
     private MpaRatingService mpaRatingService;
+    private EventProcessor eventProcessor;
 
     public List<FilmResponse> findAll() {
         return filmStorage.findAll().stream().map(FilmMapper::mapToFilmResponse).toList();
@@ -96,6 +98,7 @@ public class FilmServiceImpl implements FilmService {
     public void addLike(Long filmId, Long userId) {
         filmStorage.addLikeToFilm(filmId, userId);
 
+        eventProcessor.add(filmId, userId, EventType.LIKE);
         log.info("лайк фильму с id = {} от пользователя с id = {} добавлен", filmId, userId);
     }
 
@@ -104,6 +107,7 @@ public class FilmServiceImpl implements FilmService {
 
         filmStorage.removeLikeFromFilm(filmId, userId);
 
+        eventProcessor.remove(filmId, userId, EventType.LIKE);
         log.info("лайк у фильма с id = {} от пользователя с id = {} удален", filmId, userId);
     }
 

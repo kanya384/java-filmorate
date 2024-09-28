@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
+    private EventProcessor eventProcessor;
 
     @Override
     public List<UserResponse> findAll() {
@@ -69,6 +71,9 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("не найден пользователь с id = " + secondUserId);
         }
         userStorage.addFriendToUser(firstUserId, secondUserId);
+
+        eventProcessor.add(firstUserId, secondUserId, EventType.FRIEND);
+        eventProcessor.add(secondUserId, firstUserId, EventType.FRIEND);
     }
 
     @Override
@@ -83,6 +88,9 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("не найден пользователь с id = " + secondUserId);
         }
         userStorage.removeFriendOfUser(firstUserId, secondUserId);
+
+        eventProcessor.remove(firstUserId, secondUserId, EventType.FRIEND);
+        eventProcessor.remove(secondUserId, firstUserId, EventType.FRIEND);
     }
 
     @Override

@@ -8,11 +8,13 @@ import ru.yandex.practicum.filmorate.dto.review.CreateReviewRequest;
 import ru.yandex.practicum.filmorate.dto.review.ReviewResponse;
 import ru.yandex.practicum.filmorate.dto.review.UpdateReviewRequest;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.LikeType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -21,6 +23,7 @@ public class ReviewServiceImpl implements ReviewService {
     private FilmService filmService;
     private UserService userService;
     private ReviewStorage reviewStorage;
+    private EventProcessor eventProcessor;
 
     @Override
     public ReviewResponse create(CreateReviewRequest review) {
@@ -28,6 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
         userService.getById(review.getUserId());
 
         Review result = reviewStorage.create(ReviewMapper.mapToReview(review));
+        eventProcessor.add(result.getId(), result.getUserId(), EventType.REVIEW);
         return ReviewMapper.mapToReviewResponse(result);
     }
 
@@ -55,21 +59,36 @@ public class ReviewServiceImpl implements ReviewService {
         Review updatedReview = ReviewMapper.updateReviewFields(oldReview, request);
 
         reviewStorage.update(updatedReview);
+        eventProcessor.update(updatedReview.getId(), updatedReview.getUserId(), EventType.REVIEW);
         return ReviewMapper.mapToReviewResponse(updatedReview);
     }
 
     @Override
     public void deleteReview(Long reviewId) {
-        reviewStorage.deleteReview(reviewId);
+        Optional<Review> review = reviewStorage.getById(reviewId);
+        if (review.isPresent()) {
+            reviewStorage.deleteReview(reviewId);
+            eventProcessor.remove(reviewId, review.get().getUserId(), EventType.REVIEW);
+        }
     }
 
     @Override
     public void insertLikeDislikeToReview(Long reviewId, Long userId, LikeType likeType) {
         reviewStorage.insertLikeDislikeToReview(reviewId, userId, likeType);
+        if (likeType == LikeType.LIKE) {
+            eventProcessor.add(reviewId, userId, EventType.LIKE);
+        } else {
+            eventProcessor.add(reviewId, userId, EventType.DISLIKE);
+        }
     }
 
     @Override
-    public void removeLikeFromReview(Long filmId, Long userId, LikeType likeType) {
-        reviewStorage.removeLikeFromReview(filmId, userId, likeType);
+    public void removeLikeFromReview(Long reviewId, Long userId, LikeType likeType) {
+        reviewStorage.removeLikeFromReview(reviewId, userId, likeType);
+        if (likeType == LikeType.LIKE) {
+            eventProcessor.remove(reviewId, userId, EventType.LIKE);
+        } else {
+            eventProcessor.remove(reviewId, userId, EventType.DISLIKE);
+        }
     }
 }

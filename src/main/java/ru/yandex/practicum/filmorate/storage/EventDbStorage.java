@@ -13,8 +13,9 @@ public class EventDbStorage extends BaseDbStorage<Event> implements EventStorage
             "INSERT INTO events(event_type, operation, user_id, entity_id, created_at)" +
                     "VALUES (?, ?, ?, ?, ?)";
 
-    //TODO - переписать запрос, чтоб возвращало и события друзей
-    private static final String READ_EVENT_FEED_FOR_USER_QUERY = "SELECT * FROM events WHERE user_id = ?";
+    private static final String READ_EVENT_FEED_FOR_USER_QUERY = "SELECT * FROM EVENTS e WHERE USER_ID  = ? " +
+            "OR USER_ID IN (SELECT friend_id FROM users_friendship where initiator_id = ? AND status = 'APPROVED')";
+
 
     public EventDbStorage(JdbcTemplate jdbc, RowMapper<Event> mapper) {
         super(jdbc, mapper);
@@ -35,6 +36,6 @@ public class EventDbStorage extends BaseDbStorage<Event> implements EventStorage
 
     @Override
     public List<Event> readEventFeedForUser(Long userId) {
-        return jdbc.query(READ_EVENT_FEED_FOR_USER_QUERY, mapper, userId);
+        return jdbc.query(READ_EVENT_FEED_FOR_USER_QUERY, mapper, userId, userId);
     }
 }

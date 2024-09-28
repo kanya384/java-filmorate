@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.event.EventResponse;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     UserService userService;
+    EventService eventService;
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -69,6 +72,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void removeUser(@PathVariable("id") long userId) {
         userService.removeUser(userId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}/feed")
+    public List<EventResponse> readEventFeedForUser(@PathVariable("id") long userId) {
+        return eventService.readEventFeedForUser(userId);
     }
 
 }
