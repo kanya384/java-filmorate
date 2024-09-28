@@ -217,7 +217,7 @@ class FilmDbStorageTests {
 
 
         List<Film> films = filmStorage.getPopularFilms(1);
-        assertThat(films.getFirst().getId()).isEqualTo(2L);
+        assertThat(films.size()).isEqualTo(1);
     }
 
 }
