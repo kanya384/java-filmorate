@@ -61,6 +61,17 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private static final String REMOVE_FILM_BY_ID_QUERY = "DELETE FROM films WHERE id = ?";
 
+    private static final String GET_COMMON_FILMS = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
+            "mpa.name AS mpa_name, g.id AS genre_id, g.name AS genre_name, count(fl.user_id) AS likes " +
+            "FROM films AS f " +
+            "INNER JOIN film_likes AS fl ON fl.film_id = f.id " +
+            "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+            "LEFT JOIN film_genre AS fg ON fg.film_id = f.id " +
+            "LEFT JOIN genre AS g ON g.id = fg.genre_id " +
+            "WHERE fl.user_id IN (?, ?) " +
+            "GROUP BY f.id, f.title, f.description, f.release_date, f.duration, mpa_id, mpa_name " +
+            "HAVING COUNT(DISTINCT fl.user_id) = 2 " +
+            "ORDER BY likes DESC";
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -143,6 +154,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         return films;
     }
 
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return findMany(GET_COMMON_FILMS, userId, friendId);
+    }
+
     private void findGenresForFilms(List<Film> films) {
         ArrayList<Long> filmIds = new ArrayList<>();
         for (Film film : films) {
@@ -191,7 +207,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     .build());
         }
     }
-
 
     private final RowMapper<FilmGenre> mapFilmGenre = (ResultSet rs, int rowNum) -> FilmGenre.builder()
             .filmId(rs.getLong("film_id"))
