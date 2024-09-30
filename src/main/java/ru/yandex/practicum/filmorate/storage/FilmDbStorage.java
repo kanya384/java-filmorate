@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -199,5 +200,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             .genreName(rs.getString("genre_name"))
             .build();
 
+    @Override
+    public void addDirectorToFilm(long filmId, long directorId) {
+        insert("INSERT INTO films_of_directors(film_id, director_id) VALUES (?,?)", filmId, directorId);
+    }
+
+    @Override
+    public void deleteDirectorToFilm(long filmId) {
+        delete("DELETE FROM films_of_directors WHERE film_id=?", filmId);
+    }
 
 }

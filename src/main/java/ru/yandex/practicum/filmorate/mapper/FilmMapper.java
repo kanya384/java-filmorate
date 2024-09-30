@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmMapper {
@@ -27,6 +28,9 @@ public class FilmMapper {
             film.setGenres(request.getGenres().stream().map(GenreMapper::mapToGenre).toList());
         }
 
+        if (request.getDirector() != null) {
+            film.setDirector(request.getDirector());
+        }
         return film;
     }
 
@@ -43,6 +47,9 @@ public class FilmMapper {
         }
         if (film.getGenres() != null) {
             filmResponse.setGenres(film.getGenres().stream().map(GenreMapper::mapToGenreResponse).toList());
+        }
+        if (film.getDirector() != null) {
+            filmResponse.setDirector(film.getDirector());
         }
         return filmResponse;
     }
@@ -76,6 +83,15 @@ public class FilmMapper {
             film.setGenres(request.getGenres().stream().map(GenreMapper::mapToGenre).toList());
         } else {
             film.setGenres(null);
+        }
+
+        if (request.hasDirector()) {
+            if (film.getDirector() == null) {
+                film.setDirector(new HashSet<>());
+            }
+            film.setDirector(request.getDirector());
+        } else {
+            film.setDirector(null);
         }
 
         return film;

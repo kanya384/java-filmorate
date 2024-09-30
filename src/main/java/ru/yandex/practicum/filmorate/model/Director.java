@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Director {
-    Long id;
+    long id;
     String name;
 }

@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -25,9 +26,17 @@ public class FilmServiceImpl implements FilmService {
     private FilmStorage filmStorage;
     private GenreService genreService;
     private MpaRatingService mpaRatingService;
+    private DirectorService directorService;
 
     public List<FilmResponse> findAll() {
-        return filmStorage.findAll().stream().map(FilmMapper::mapToFilmResponse).toList();
+        return filmStorage.findAll().stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .map((x) -> {
+                    long id = x.getId();
+                    x.setDirector(new HashSet<>(directorService.getDirectorsOfFilm(id)));
+                    return x;
+                })
+                .toList();
     }
 
     public FilmResponse create(NewFilmRequest film) {
@@ -49,6 +58,16 @@ public class FilmServiceImpl implements FilmService {
             }
         }
 
+        if (film.getDirector() != null) {
+            for (Director d : film.getDirector()) {
+                try {
+                    directorService.findById(d.getId());
+                } catch (Exception e) {
+                    throw new BadRequestException("не найден режиссер с id = " + d.getId());
+                }
+            }
+        }
+
         FilmResponse filmResponse = FilmMapper.mapToFilmResponse(filmStorage.create(FilmMapper.mapToFilm(film)));
 
         if (film.getGenres() != null) {
@@ -63,12 +82,23 @@ public class FilmServiceImpl implements FilmService {
             filmResponse.setGenres(film.getGenres().stream().map(GenreMapper::mapToGenreResponse).toList());
         }
 
+        if (film.getDirector() != null) {
+            Set<Long> createdDirectorIds = new HashSet<>();
+            for (Director d : film.getDirector()) {
+                if (!createdDirectorIds.contains(d.getId())) {
+                    filmStorage.addDirectorToFilm(filmResponse.getId(), d.getId());
+                }
+            }
+        }
+
         return filmResponse;
     }
 
     public FilmResponse getById(long id) {
-        return filmStorage.getById(id).map(FilmMapper::mapToFilmResponse)
+        FilmResponse filmResponse = filmStorage.getById(id).map(FilmMapper::mapToFilmResponse)
                 .orElseThrow(() -> new NotFoundException("не найден фильм с id = " + id));
+        filmResponse.setDirector(new HashSet<>(directorService.getDirectorsOfFilm(id)));
+        return filmResponse;
     }
 
     public FilmResponse update(long filmId, UpdateFilmRequest request) {
@@ -80,6 +110,15 @@ public class FilmServiceImpl implements FilmService {
             List<Long> newGenreIds = request.getGenres().stream().map(GenreRequest::getId).toList();
             for (Long newGenreId : newGenreIds) {
                 filmStorage.addGenreToFilm(filmId, newGenreId);
+            }
+        }
+        if (request.hasDirector()) {
+            Set<Long> newDirectorIds = new HashSet<>();
+            filmStorage.deleteDirectorToFilm(filmId);
+            for (Director d : request.getDirector()) {
+                if (!newDirectorIds.contains(d.getId())) {
+                    filmStorage.addDirectorToFilm(filmId, d.getId());
+                }
             }
         }
 

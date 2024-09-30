@@ -10,6 +10,7 @@ import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Film.
@@ -36,4 +37,6 @@ public class Film {
     MpaRating mpa;
 
     List<Genre> genres;
+
+    Set<Director> director;
 }

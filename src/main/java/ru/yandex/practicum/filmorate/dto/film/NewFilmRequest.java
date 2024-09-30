@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Director;
 import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -28,4 +30,5 @@ public class NewFilmRequest {
     private Integer duration;
     private MpaRequest mpa;
     private List<GenreRequest> genres;
+    private Set<Director> director;
 }
