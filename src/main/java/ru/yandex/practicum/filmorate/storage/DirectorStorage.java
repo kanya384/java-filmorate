@@ -39,7 +39,7 @@ public class DirectorStorage extends BaseDbStorage<Director> {
         delete("DELETE FROM directors WHERE id=?", id);
     }
 
-    public List<Director> getDirectorsOfFilm(long filmId){
+    public List<Director> getDirectorsOfFilm(long filmId) {
         return findMany("SELECT d.id,d.name FROM directors d " +
                                            "LEFT JOIN films_of_directors fod ON d.id=fod.director_id WHERE fod.film_id=?", filmId);
     }

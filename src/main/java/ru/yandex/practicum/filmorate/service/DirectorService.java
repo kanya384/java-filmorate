@@ -33,7 +33,7 @@ import java.util.List;
             directorStorage.deleteDirector(id);
         }
 
-        public List<Director> getDirectorsOfFilm(long filmId){
+        public List<Director> getDirectorsOfFilm(long filmId) {
             return directorStorage.getDirectorsOfFilm(filmId);
         }
     }
