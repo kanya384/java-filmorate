@@ -90,7 +90,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> findAll() {
         List<Film> films = jdbc.query(FIND_ALL_QUERY, mapper);
-
         findGenresForFilms(films);
         findDirectorsForFilms(films);
         return films;
@@ -210,7 +209,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
         List<FilmDirector> filmDirectors = jdbc.query(connection -> {
             StringBuilder query = new StringBuilder();
-            query.append("SELECT d.id,d.name FROM directors d " +
+            query.append("SELECT d.id as director_id,d.name,fod.film_id FROM directors d " +
                     "LEFT JOIN films_of_directors fod ON d.id=fod.director_id WHERE fod.film_id IN (");
             for (int i = 0; i < filmIds.size(); i++) {
                 if (i == 0) {
@@ -222,7 +221,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             query.append(")");
 
             PreparedStatement stmt = connection.prepareStatement(query.toString());
-
             for (int i = 0; i < filmIds.size(); i++) {
                 stmt.setLong(i + 1, filmIds.get(i));
             }
@@ -231,23 +229,21 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
 
         Map<Long, Film> mapFilmIdToFilm = new HashMap<>();
-
         for (Film film : films) {
             mapFilmIdToFilm.put(film.getId(), film);
         }
-
         for (FilmDirector filmDirector : filmDirectors) {
             if (filmDirector == null) {
                 continue;
             }
             
             Film film = mapFilmIdToFilm.get(filmDirector.getFilmId());
-            if (film.getGenres() == null) {
-                film.setGenres(new ArrayList<>());
+            if (film.getDirector() == null) {
+                film.setDirector(new ArrayList<>());
             }
 
             film.getDirector().add(Director.builder()
-                    .id(filmDirector.getFilmId())
+                    .id(filmDirector.getDirectorId())
                     .build());
         }
     }
@@ -290,7 +286,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     "LEFT JOIN films_of_directors fod ON f.id=fod.film_id " +
                     "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
                     "WHERE fod.director_id = ? " +
-                    "ORDER BY f.release_date DESC";
+                    "ORDER BY f.release_date";
         }
         if (sortBy.equals("likes")) {
             query = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
