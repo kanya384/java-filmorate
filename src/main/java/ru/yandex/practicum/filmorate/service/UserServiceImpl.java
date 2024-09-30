@@ -4,6 +4,7 @@ import exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
@@ -11,14 +12,14 @@ import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
+    private FilmLikeService filmLikeService;
 
     @Override
     public List<UserResponse> findAll() {
@@ -108,4 +109,45 @@ public class UserServiceImpl implements UserService {
         return userStorage.getCommonFriendsOfUsers(firstUserId, secondUserId).stream()
                 .map(UserMapper::mapToUserResponse).toList();
     }
+
+    //    @Override
+////    public List<FilmResponse> getRecommendationsFilms(long userId) {
+//    public List<Long> getRecommendationsFilms(long userId) {
+//        Map<Long, List<Long>> filmLikes = filmLikeService.getFilmLikes();
+//        return null;
+//    }
+    @Override
+    public List<Long> getRecommendationsFilms(long userId) {
+        Map<Long, List<Long>> filmLikes = filmLikeService.getFilmLikes();
+        List<Long> likedFilmIds = filmLikes.getOrDefault(userId, new ArrayList<>());
+        List<Long> likedToUserFilmIds = List.of();
+        int count = 0;
+
+        for (long i = 0; i < filmLikes.size(); i++) {
+            if (i + 1 == userId) {
+                continue;
+            }
+            List<Long> filmId = filmLikes.get(i);
+            int matches = 0;
+
+//            for (long j = 0; j < likedFilmIds.size(); j++) {
+//                for (long k = 0; k < filmId.size(); k++) {
+//                    if (likedFilmIds.get(j))
+//                }
+//            }
+            for (long j : likedFilmIds) {
+                for (long k : filmId) {
+                    if (j == k)
+                        matches++;
+                }
+            }
+
+            if (matches > count) {
+                likedToUserFilmIds = new ArrayList<>(filmId);
+            }
+        }
+
+        return likedToUserFilmIds;
+    }
 }
+

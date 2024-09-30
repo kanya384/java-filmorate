@@ -70,5 +70,9 @@ public class UserController {
     public void removeUser(@PathVariable("id") long userId) {
         userService.removeUser(userId);
     }
-
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}/recommendations")
+    public List<Long> recommendations(@PathVariable("id") long userId) {
+        return userService.getRecommendationsFilms(userId);
+    }
 }

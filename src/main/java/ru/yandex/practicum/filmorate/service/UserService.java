@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
@@ -26,4 +27,7 @@ public interface UserService {
     List<UserResponse> getAllUsersFriends(long userId);
 
     List<UserResponse> getCommonFriendsOfUsers(long firstUserId, long secondUserId);
+
+//    List<FilmResponse> getRecommendationsFilms(long userId);
+    List<Long> getRecommendationsFilms(long userId);
 }
