@@ -22,5 +22,9 @@ public interface FilmService {
 
     List<FilmResponse> getPopularFilms(int count);
 
+
     List<FilmResponse> getPopularFilmsByGenreAndByDate(int count, int genreId, int year);
+
+    List<FilmResponse> getCommonFilms(long userId, long friendId);
+
 }

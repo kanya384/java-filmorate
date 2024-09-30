@@ -68,5 +68,10 @@ public class FilmController {
         else
             return filmService.getPopularFilmsByGenreAndByDate(count, genreId, year);
     }
+  
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/common")
+    public List<FilmResponse> commonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
 
-}
