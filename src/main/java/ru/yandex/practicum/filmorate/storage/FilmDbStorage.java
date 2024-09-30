@@ -188,7 +188,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         findGenresForFilms(films);
         return films;
     }
-  
+
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
         return findMany(GET_COMMON_FILMS, userId, friendId);

@@ -130,7 +130,7 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmResponse)
                 .toList();
     }
-  
+
     @Override
     public List<FilmResponse> getCommonFilms(long userId, long friendId) {
         return filmStorage.getCommonFilms(userId, friendId).stream()
