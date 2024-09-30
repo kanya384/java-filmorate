@@ -22,4 +22,6 @@ public interface FilmService {
     void removeFilm(Long filmId);
 
     List<FilmResponse> getPopularFilms(int count);
+
+    List<FilmResponse> getPopularFilmsByGenreAndByDate(int count, int genreId, int year);
 }

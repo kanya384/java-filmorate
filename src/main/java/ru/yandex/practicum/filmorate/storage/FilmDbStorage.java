@@ -6,6 +6,8 @@ import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -139,6 +141,42 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> getPopularFilms(int count) {
         List<Film> films = jdbc.query(GET_TOP_POPULAR_FILMS_QUERY, mapper, count);
+        findGenresForFilms(films);
+        return films;
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByGenreAndByDate(int count, int genreId, int year) {
+        List<Film> films = new ArrayList<>();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id, " +
+                     "mpa.name AS mpa_name, count(fl.user_id <> 0) AS likes " +
+                     "FROM films f " +
+                     "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+                     "LEFT JOIN film_genre fg ON f.id=fg.film_id " +
+                     "LEFT JOIN film_likes fl ON f.id=fl.film_id WHERE ");
+
+        if ((genreId != 0) && (year != 0)) {
+            query.append("fg.genre_id = ? AND EXTRACT(YEAR FROM f.release_date) = ? " +
+                    "GROUP BY f.id " +
+                    "ORDER BY likes DESC " +
+                    "LIMIT ? ");
+            films.addAll(jdbc.query(query.toString(), mapper, genreId, year, count));
+        }
+        if ((genreId == 0) && (year != 0)) {
+            query.append("EXTRACT(YEAR FROM f.release_date) = ? " +
+                    "GROUP BY f.id " +
+                    "ORDER BY likes DESC " +
+                    "LIMIT ? ");
+            films.addAll(jdbc.query(query.toString(), mapper, year, count));
+        }
+        if ((genreId != 0) && (year == 0)) {
+            query.append("fg.genre_id = ? " +
+                    "GROUP BY f.id " +
+                    "ORDER BY likes DESC " +
+                    "LIMIT ? ");
+            films.addAll(jdbc.query(query.toString(), mapper, genreId, count));
+        }
         findGenresForFilms(films);
         return films;
     }

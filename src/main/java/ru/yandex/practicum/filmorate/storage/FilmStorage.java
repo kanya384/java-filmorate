@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface FilmStorage {
     void removeFilmById(Long filmId);
 
     List<Film> getPopularFilms(int count);
+
+    List<Film> getPopularFilmsByGenreAndByDate(int count, int genreId, int year);
 }

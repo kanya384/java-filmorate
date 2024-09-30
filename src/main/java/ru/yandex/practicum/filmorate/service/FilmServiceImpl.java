@@ -122,4 +122,12 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmResponse)
                 .toList();
     }
+
+    @Override
+    public List<FilmResponse> getPopularFilmsByGenreAndByDate(int count, int genreId, int year) {
+        return filmStorage.getPopularFilmsByGenreAndByDate(count,genreId,year)
+                .stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .toList();
+    }
 }

@@ -62,11 +62,13 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
-    public List<FilmResponse> getPopularFilms(@RequestParam("count") Optional<Integer> count) {
-        if (count.isPresent()) {
-            return filmService.getPopularFilms(count.get());
-        } else {
-            return filmService.getPopularFilms(10);
-        }
+    public List<FilmResponse> getPopularFilms(@RequestParam(name = "count",defaultValue = "10") Integer count,
+                                              @RequestParam(required = false,defaultValue = "0") Integer genreId,
+                                              @RequestParam(required = false,defaultValue = "0") Integer year) {
+        if (genreId == 0 && year == 0)
+            return filmService.getPopularFilms(count);
+        else
+            return filmService.getPopularFilmsByGenreAndByDate(count, genreId, year);
     }
+
 }
