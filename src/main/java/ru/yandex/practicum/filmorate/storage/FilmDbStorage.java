@@ -236,7 +236,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             if (filmDirector == null) {
                 continue;
             }
-            
             Film film = mapFilmIdToFilm.get(filmDirector.getFilmId());
             if (film.getDirector() == null) {
                 film.setDirector(new ArrayList<>());
