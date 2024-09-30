@@ -9,7 +9,6 @@ import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -28,7 +27,7 @@ public class UpdateFilmRequest {
     private Integer duration;
     private MpaRequest mpa;
     private List<GenreRequest> genres;
-    private Set<Director> director;
+    private List<Director> directors;
 
     public boolean hasTitle() {
         return name != null;
@@ -55,6 +54,6 @@ public class UpdateFilmRequest {
     }
 
     public boolean hasDirector() {
-        return director != null;
+        return directors != null;
     }
 }

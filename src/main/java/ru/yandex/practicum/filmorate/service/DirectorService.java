@@ -1,40 +1,19 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+
 import java.util.List;
 
-    @Slf4j
-    @AllArgsConstructor
-    @Service
-    public class DirectorService {
-        DirectorStorage directorStorage;
+public interface DirectorService {
+    Director createDirector(Director director);
 
-        public Director createDirector(Director director) {
-            return directorStorage.createDirector(director);
-        }
+    List<Director> getAll();
 
-        public List<Director> getAll() {
-            return directorStorage.getAll();
-        }
+    Director findById(long id);
 
-        public Director findById(long id) {
-            return directorStorage.findById(id);
-        }
+    Director updateDirector(Director director);
 
-        public Director updateDirector(Director director) {
-            return directorStorage.updateDirector(director);
-        }
+    void deleteDirector(long id);
 
-        public void deleteDirector(long id) {
-            directorStorage.deleteDirector(id);
-        }
-
-        public List<Director> getDirectorsOfFilm(long filmId) {
-            return directorStorage.getDirectorsOfFilm(filmId);
-        }
-    }
-
+    List<Director> getDirectorsOfFilm(long filmId);
+}

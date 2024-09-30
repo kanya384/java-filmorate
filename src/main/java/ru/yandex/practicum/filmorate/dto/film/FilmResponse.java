@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Builder
 @Data
@@ -22,5 +21,5 @@ public class FilmResponse {
     private Integer duration;
     private MpaRatingResponse mpa;
     private List<GenreResponse> genres;
-    private Set<Director> director;
+    private List<Director> directors;
 }

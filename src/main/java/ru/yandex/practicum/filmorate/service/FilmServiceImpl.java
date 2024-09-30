@@ -31,11 +31,6 @@ public class FilmServiceImpl implements FilmService {
     public List<FilmResponse> findAll() {
         return filmStorage.findAll().stream()
                 .map(FilmMapper::mapToFilmResponse)
-                .map((x) -> {
-                    long id = x.getId();
-                    x.setDirector(new HashSet<>(directorService.getDirectorsOfFilm(id)));
-                    return x;
-                })
                 .toList();
     }
 
@@ -58,8 +53,8 @@ public class FilmServiceImpl implements FilmService {
             }
         }
 
-        if (film.getDirector() != null) {
-            for (Director d : film.getDirector()) {
+        if (film.getDirectors() != null) {
+            for (Director d : film.getDirectors()) {
                 try {
                     directorService.findById(d.getId());
                 } catch (Exception e) {
@@ -82,11 +77,12 @@ public class FilmServiceImpl implements FilmService {
             filmResponse.setGenres(film.getGenres().stream().map(GenreMapper::mapToGenreResponse).toList());
         }
 
-        if (film.getDirector() != null) {
+        if (film.getDirectors() != null) {
             Set<Long> createdDirectorIds = new HashSet<>();
-            for (Director d : film.getDirector()) {
+            for (Director d : film.getDirectors()) {
                 if (!createdDirectorIds.contains(d.getId())) {
                     filmStorage.addDirectorToFilm(filmResponse.getId(), d.getId());
+                    createdDirectorIds.add(d.getId());
                 }
             }
         }
@@ -97,7 +93,7 @@ public class FilmServiceImpl implements FilmService {
     public FilmResponse getById(long id) {
         FilmResponse filmResponse = filmStorage.getById(id).map(FilmMapper::mapToFilmResponse)
                 .orElseThrow(() -> new NotFoundException("не найден фильм с id = " + id));
-        filmResponse.setDirector(new HashSet<>(directorService.getDirectorsOfFilm(id)));
+        filmResponse.setDirectors(directorService.getDirectorsOfFilm(id));
         return filmResponse;
     }
 
@@ -112,13 +108,12 @@ public class FilmServiceImpl implements FilmService {
                 filmStorage.addGenreToFilm(filmId, newGenreId);
             }
         }
+
+        filmStorage.deleteDirectorToFilm(filmId);
         if (request.hasDirector()) {
-            Set<Long> newDirectorIds = new HashSet<>();
-            filmStorage.deleteDirectorToFilm(filmId);
-            for (Director d : request.getDirector()) {
-                if (!newDirectorIds.contains(d.getId())) {
-                    filmStorage.addDirectorToFilm(filmId, d.getId());
-                }
+            List<Long> newDirectorIds = request.getDirectors().stream().map(Director::getId).toList();
+            for (Long newDirectorId : newDirectorIds) {
+                filmStorage.addDirectorToFilm(filmId, newDirectorId);
             }
         }
 

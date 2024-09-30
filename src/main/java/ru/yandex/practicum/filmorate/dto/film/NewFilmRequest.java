@@ -11,7 +11,6 @@ import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -30,5 +29,5 @@ public class NewFilmRequest {
     private Integer duration;
     private MpaRequest mpa;
     private List<GenreRequest> genres;
-    private Set<Director> director;
+    private List<Director> directors;
 }

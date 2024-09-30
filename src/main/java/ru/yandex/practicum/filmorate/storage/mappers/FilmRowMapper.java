@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 @Component
 public class FilmRowMapper implements RowMapper<Film> {
@@ -28,7 +27,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .mpa(mpaRating)
                 .build();
 
-        film.setDirector(new HashSet<>());
+        film.setDirector(new ArrayList<>());
 
         try {
             do {
