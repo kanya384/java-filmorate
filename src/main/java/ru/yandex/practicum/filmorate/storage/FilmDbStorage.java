@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -208,6 +209,36 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public void deleteDirectorToFilm(long filmId) {
         delete("DELETE FROM films_of_directors WHERE film_id=?", filmId);
+    }
+
+    @Override
+    public List<Film> getSortedFilmsOfDirector(long directorId, String sortBy) {
+        String query = "";
+        if (sortBy.equals("year")) {
+            query = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
+                    "mpa.name AS mpa_name " +
+                    "FROM films f " +
+                    "LEFT JOIN films_of_directors fod ON f.id=fod.film_id " +
+                    "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+                    "WHERE fod.director_id = ? " +
+                    "ORDER BY f.release_date DESC";
+        }
+        if (sortBy.equals("likes")) {
+            query = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
+                    "mpa.name AS mpa_name, count(fl.user_id <> 0) AS likes " +
+                    "FROM films f " +
+                    "LEFT JOIN films_of_directors fod ON f.id=fod.film_id " +
+                    "LEFT JOIN film_likes AS fl ON fl.film_id = f.id " +
+                    "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+                    "WHERE fod.director_id = ? " +
+                    "GROUP BY f.id " +
+                    "ORDER BY likes DESC";
+        }
+        if (query.equals("")) {
+            throw new InternalServerException("Неправильно задан параметр сортировки");
+        } else {
+            return findMany(query,directorId);
+        }
     }
 
 }

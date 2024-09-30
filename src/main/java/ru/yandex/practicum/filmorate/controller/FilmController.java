@@ -69,4 +69,10 @@ public class FilmController {
             return filmService.getPopularFilms(10);
         }
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/director/{directorId}")
+    public List<FilmResponse> getSortedFilmsOfDirector(@PathVariable long directorId, @RequestParam String sortBy) {
+        return filmService.getSortedFilmsOfDirector(directorId,sortBy);
+    }
 }

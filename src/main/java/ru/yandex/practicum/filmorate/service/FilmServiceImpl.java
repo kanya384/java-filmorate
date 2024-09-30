@@ -161,4 +161,12 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmResponse)
                 .toList();
     }
+
+    @Override
+    public List<FilmResponse> getSortedFilmsOfDirector(long directorId, String sortBy) {
+        return filmStorage.getSortedFilmsOfDirector(directorId, sortBy)
+                .stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .toList();
+    }
 }
