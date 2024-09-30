@@ -8,9 +8,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")

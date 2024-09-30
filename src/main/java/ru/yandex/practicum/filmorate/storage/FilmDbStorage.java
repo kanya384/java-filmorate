@@ -6,11 +6,8 @@ import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
-import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;

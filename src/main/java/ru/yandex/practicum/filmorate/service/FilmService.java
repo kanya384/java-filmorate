@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
-
 import java.util.List;
 
 public interface FilmService {
