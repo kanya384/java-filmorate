@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchFilter;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +35,5 @@ public interface FilmStorage {
 
     List<Film> getCommonFilms(long userId, long friendId);
 
+    List<Film> search(String query, SearchFilter by);
 }
