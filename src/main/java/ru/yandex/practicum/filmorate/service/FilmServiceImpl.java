@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -163,5 +164,12 @@ public class FilmServiceImpl implements FilmService {
                 .stream()
                 .map(FilmMapper::mapToFilmResponse)
                 .toList();
+    }
+
+    @Override
+    public List<FilmResponse> getCommonFilms(long userId, long friendId) {
+        return filmStorage.getCommonFilms(userId, friendId).stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .collect(Collectors.toList());
     }
 }
