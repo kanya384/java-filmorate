@@ -267,7 +267,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     @Override
     public void addDirectorToFilm(long filmId, long directorId) {
-        insert("INSERT INTO films_of_directors(film_id, director_id) VALUES (?,?)", filmId, directorId);
+        update("INSERT INTO films_of_directors(film_id, director_id) VALUES (?,?)", filmId, directorId);
     }
 
     @Override
