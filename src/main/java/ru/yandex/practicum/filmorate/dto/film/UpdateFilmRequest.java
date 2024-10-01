@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Director;
 import validator.ReleaseDateValidation;
 
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ public class UpdateFilmRequest {
     private Integer duration;
     private MpaRequest mpa;
     private List<GenreRequest> genres;
+    private List<Director> directors;
 
     public boolean hasTitle() {
         return name != null;
@@ -49,5 +51,9 @@ public class UpdateFilmRequest {
 
     public boolean hasGenres() {
         return genres != null;
+    }
+
+    public boolean hasDirector() {
+        return directors != null;
     }
 }

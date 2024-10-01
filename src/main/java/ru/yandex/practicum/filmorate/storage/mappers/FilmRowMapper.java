@@ -27,6 +27,8 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .mpa(mpaRating)
                 .build();
 
+        film.setDirector(new ArrayList<>());
+
         try {
             do {
                 Long id = rs.getLong("genre_id");
