@@ -22,4 +22,9 @@ public interface FilmService {
     void removeFilm(Long filmId);
 
     List<FilmResponse> getPopularFilms(int count);
+
+    List<FilmResponse> getSortedFilmsOfDirector(long directorId, String sortBy);
+
+    List<FilmResponse> getCommonFilms(long userId, long friendId);
+
 }
