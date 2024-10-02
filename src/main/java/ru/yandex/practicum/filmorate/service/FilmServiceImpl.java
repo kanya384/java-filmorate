@@ -172,4 +172,11 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<FilmResponse> findByListId(List<Long> filmsId) {
+        return filmStorage.getByListId(filmsId).stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .toList();
+    }
 }

@@ -135,3 +135,21 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         return findMany(FIND_ALL_COMMON_USER_FRIENDS_QUERY, firstUserId, secondUserId);
     }
 }
+
+//public List<Film> findFilmsByIds(List<String> filmsId) {
+//    // Проверяем, что список не пуст
+//    if (filmsId.isEmpty()) {
+//        return List.of(); // или выбросить исключение, в зависимости от логики
+//    }
+//
+//    // Создаем строку с плейсхолдерами для запроса
+//    StringJoiner joiner = new StringJoiner(",", "(", ")");
+//    for (String id : filmsId) {
+//        joiner.add("?");
+//    }
+//
+//    String sql = "SELECT * FROM films WHERE id IN " + joiner.toString();
+//
+//    // Выполняем запрос
+//    return jdbcTemplate.query(sql, filmsId.toArray(), filmRowMapper);
+//}

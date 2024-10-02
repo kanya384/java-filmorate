@@ -25,6 +25,8 @@ public interface FilmStorage {
 
     List<Film> getPopularFilms(int count);
 
+    List<Film> getByListId(List<Long> filmsId);
+
     void addDirectorToFilm(long filmId, long directorId);
 
     void deleteDirectorToFilm(long filmId);

@@ -10,10 +10,10 @@ import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
     private FilmService filmService;
-    private FilmLikeService filmLikeService;
+    private FilmLikeStorage filmLikeStorage;
 
     @Override
     public List<UserResponse> findAll() {
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<FilmResponse> getRecommendationsFilms(long userId) {
-        Map<Long, List<Long>> userFilms = filmLikeService.getFilmLikes();
+        Map<Long, List<Long>> userFilms = filmLikeStorage.getFilmLike();
         List<Long> currentUserFilms = userFilms.getOrDefault(userId, new ArrayList<>());
         if (currentUserFilms.isEmpty()) {
             return new ArrayList<>(); // возвращаем пустой массив, если пользователь не имеет ни одного лайка
@@ -123,28 +123,18 @@ public class UserServiceImpl implements UserService {
 
         TreeMap<Long, List<Long>> filmIntersections = new TreeMap<>(Comparator.reverseOrder());
 
-        boolean hasSameLikes = false;
         for (List<Long> value : userFilms.values()) {
             long countMatches = countMatches(currentUserFilms, value);
             if (countMatches > 0) {
-                hasSameLikes = true;
                 filmIntersections.put(countMatches, value);
             }
         }
 
-        if (!hasSameLikes) {
-            return new ArrayList<>(); // возвращаем пустой массив, если не найдены пользователи с одинаковыми лайками
-        }
-
-        List<Long> bestUserFilms = filmIntersections.firstEntry().getValue();
+        List<Long> bestUserFilms = filmIntersections.isEmpty() ? new ArrayList<>() :
+                filmIntersections.firstEntry().getValue();
         bestUserFilms.removeAll(currentUserFilms);
 
-        List<FilmResponse> allFilms = filmService.findAll();
-        List<FilmResponse> recommendedFilms = allFilms.stream()
-                .filter(film -> bestUserFilms.contains(film.getId()))
-                .collect(Collectors.toList());
-
-        return recommendedFilms;
+        return filmService.findByListId(bestUserFilms);
     }
 
     private long countMatches(List<Long> list1, List<Long> list2) {

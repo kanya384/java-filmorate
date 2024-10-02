@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import java.util.List;
 
 public interface FilmService {
+
     List<FilmResponse> findAll();
 
     FilmResponse create(NewFilmRequest film);
@@ -27,4 +28,6 @@ public interface FilmService {
 
     List<FilmResponse> getCommonFilms(long userId, long friendId);
 
+
+    List<FilmResponse> findByListId(List<Long> filmsId);
 }

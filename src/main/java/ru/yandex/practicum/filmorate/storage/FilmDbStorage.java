@@ -81,6 +81,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "WHERE fl2.user_id IN (?, ?) GROUP BY f.id HAVING COUNT(DISTINCT fl2.user_id) = 2) " +
             "GROUP BY f.id " +
             "ORDER BY likes DESC";
+    private static final String FIND_BY_ID_LIST_QUERY = "SELECT f.id, f.title, f.description, " +
+            "f.release_date, f.duration," +
+            "f.rating_id AS mpa_id, mpa.name AS mpa_name, g.id AS genre_id, g.name AS genre_name FROM films AS f " +
+            "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+            "LEFT JOIN film_genre AS fg ON fg.film_id = f.id " +
+            "LEFT JOIN genre AS g ON g.id = fg.genre_id " +
+            "WHERE f.id IN ";
+
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -157,6 +165,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
+    public List<Film> getByListId(List<Long> filmsId) {
+        StringJoiner joiner = new StringJoiner(",", "(", ")");
+        for (int i = 0; i < filmsId.size(); i++) {
+            joiner.add("?");
+        }
+        String sql = FIND_BY_ID_LIST_QUERY + joiner;
+        return findMany(sql, filmsId.toArray());
+    }
+
+    @Override
     public List<Film> getPopularFilms(int count) {
         List<Film> films = jdbc.query(GET_TOP_POPULAR_FILMS_QUERY, mapper, count);
         findGenresForFilms(films);
@@ -174,7 +192,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         for (Film film : films) {
             filmIds.add(film.getId());
         }
-
 
         List<FilmGenre> filmGenres = jdbc.query(connection -> {
             StringBuilder query = new StringBuilder();
@@ -264,7 +281,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                     .build());
         }
     }
-
 
     private final RowMapper<FilmGenre> mapFilmGenre = (ResultSet rs, int rowNum) -> FilmGenre.builder()
             .filmId(rs.getLong("film_id"))
