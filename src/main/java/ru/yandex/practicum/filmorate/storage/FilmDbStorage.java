@@ -87,7 +87,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
             "LEFT JOIN films_of_directors AS fd ON f.id = fd.film_id " +
             "LEFT JOIN directors AS dir ON dir.id = fd.director_id " +
-            "WHERE dir.name LIKE ? " +
+            "WHERE LOWER(dir.name) LIKE LOWER(?) " +
             "GROUP BY f.id " +
             "ORDER BY likes DESC";
     private static final String SEARCH_BY_DIRECTOR_AND_TITLE_QUERY = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
@@ -97,7 +97,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
             "LEFT JOIN films_of_directors AS fd ON f.id = fd.film_id " +
             "LEFT JOIN directors AS dir ON dir.id = fd.director_id " +
-            "WHERE dir.name LIKE ? OR f.title LIKE ? " +
+            "WHERE LOWER(dir.name) LIKE LOWER(?) OR LOWER(f.title) LIKE LOWER(?) " +
             "GROUP BY f.id, f.title, f.description, f.release_date, f.duration, mpa_id, mpa_name " +
             "ORDER BY likes DESC";
     private static final String SEARCH_BY_TITLE_QUERY = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
@@ -105,7 +105,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "FROM films AS f " +
             "LEFT JOIN film_likes AS fl ON fl.film_id = f.id " +
             "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
-            "WHERE f.title LIKE ? " +
+            "WHERE LOWER(f.title) LIKE LOWER(?) " +
             "GROUP BY f.id " +
             "ORDER BY likes DESC";
 
