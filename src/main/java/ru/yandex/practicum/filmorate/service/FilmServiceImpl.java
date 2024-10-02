@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -164,14 +165,6 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<FilmResponse> getPopularFilmsByGenreAndByDate(int count, int genreId, int year) {
-        return filmStorage.getPopularFilmsByGenreAndByDate(count,genreId,year)
-                .stream()
-                .map(FilmMapper::mapToFilmResponse)
-                .toList();
-    }
-
-    @Override
     public List<FilmResponse> getCommonFilms(long userId, long friendId) {
         return filmStorage.getCommonFilms(userId, friendId).stream()
                 .map(FilmMapper::mapToFilmResponse)
@@ -181,7 +174,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<FilmResponse> getPopularFilmsByGenreAndByDate(int count, int genreId, int year) {
-        return filmStorage.getPopularFilmsByGenreAndByDate(count,genreId,year)
+        return filmStorage.getPopularFilmsByGenreAndByDate(count, genreId, year)
                 .stream()
                 .map(FilmMapper::mapToFilmResponse)
                 .toList();
