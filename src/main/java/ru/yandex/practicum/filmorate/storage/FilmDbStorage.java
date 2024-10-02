@@ -196,6 +196,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             films.addAll(jdbc.query(query.toString(), mapper, genreId, count));
         }
         findGenresForFilms(films);
+        findDirectorsForFilms(films);
         return films;
     }
 

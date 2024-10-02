@@ -30,7 +30,9 @@ public class FilmServiceImpl implements FilmService {
     private DirectorService directorService;
 
     public List<FilmResponse> findAll() {
-        return filmStorage.findAll().stream().map(FilmMapper::mapToFilmResponse).toList();
+        return filmStorage.findAll().stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .toList();
     }
 
     public FilmResponse create(NewFilmRequest film) {

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import java.util.List;
 
 @RestController
@@ -72,7 +73,7 @@ public class FilmController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/director/{directorId}")
     public List<FilmResponse> getSortedFilmsOfDirector(@PathVariable long directorId, @RequestParam String sortBy) {
-        return filmService.getSortedFilmsOfDirector(directorId,sortBy);
+        return filmService.getSortedFilmsOfDirector(directorId, sortBy);
     }
 
 
