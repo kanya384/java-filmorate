@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
-import ru.yandex.practicum.filmorate.dto.film.GenreRequest;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -106,9 +105,12 @@ public class FilmServiceImpl implements FilmService {
 
         filmStorage.clearGenresOfFilm(filmId);
         if (request.hasGenres()) {
-            List<Long> newGenreIds = request.getGenres().stream().map(GenreRequest::getId).toList();
-            for (Long newGenreId : newGenreIds) {
-                filmStorage.addGenreToFilm(filmId, newGenreId);
+            Set<Long> createdGenreIds = new HashSet<>();
+            for (var genre : request.getGenres()) {
+                if (!createdGenreIds.contains(genre.getId())) {
+                    filmStorage.addGenreToFilm(request.getId(), genre.getId());
+                    createdGenreIds.add(genre.getId());
+                }
             }
         }
 
@@ -164,6 +166,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<FilmResponse> getSortedFilmsOfDirector(long directorId, String sortBy) {
+        directorService.findById(directorId);
         return filmStorage.getSortedFilmsOfDirector(directorId, sortBy)
                 .stream()
                 .map(FilmMapper::mapToFilmResponse)

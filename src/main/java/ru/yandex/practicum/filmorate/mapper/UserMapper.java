@@ -23,7 +23,7 @@ public class UserMapper {
                 .id(user.getId())
                 .email(user.getEmail())
                 .login(user.getLogin())
-                .name(user.getName())
+                .name(user.getName().isBlank() ? user.getLogin() : user.getName())
                 .birthday(user.getBirthday())
                 .build();
     }

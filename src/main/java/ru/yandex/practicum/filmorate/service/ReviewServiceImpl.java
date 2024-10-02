@@ -75,20 +75,10 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void insertLikeDislikeToReview(Long reviewId, Long userId, LikeType likeType) {
         reviewStorage.insertLikeDislikeToReview(reviewId, userId, likeType);
-        if (likeType == LikeType.LIKE) {
-            eventProcessor.add(reviewId, userId, EventType.LIKE);
-        } else {
-            eventProcessor.add(reviewId, userId, EventType.DISLIKE);
-        }
     }
 
     @Override
     public void removeLikeFromReview(Long reviewId, Long userId, LikeType likeType) {
         reviewStorage.removeLikeFromReview(reviewId, userId, likeType);
-        if (likeType == LikeType.LIKE) {
-            eventProcessor.remove(reviewId, userId, EventType.LIKE);
-        } else {
-            eventProcessor.remove(reviewId, userId, EventType.DISLIKE);
-        }
     }
 }

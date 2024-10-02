@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import exception.InternalServerException;
+import exception.NotFoundException;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +31,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static class FilmDirector {
         private long filmId;
         private long directorId;
+        private String directorName;
     }
 
     private static final String FIND_ALL_QUERY = "SELECT f.id, f.title, f.description, f.release_date, f.duration," +
@@ -182,14 +184,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public void removeLikeFromFilm(Long filmId, Long userId) {
         if (!delete(REMOVE_LIKE_FROM_FILM_QUERY, filmId, userId)) {
-            throw new InternalServerException("Не найден лайк для удаления");
+            throw new NotFoundException("Не найден лайк для удаления");
         }
     }
 
     @Override
     public void removeFilmById(Long filmId) {
         if (!delete(REMOVE_FILM_BY_ID_QUERY, filmId)) {
-            throw new InternalServerException("Фильм для удаления не найден");
+            throw new NotFoundException("Фильм для удаления не найден");
         }
     }
 
@@ -359,7 +361,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
         List<FilmDirector> filmDirectors = jdbc.query(connection -> {
             StringBuilder query = new StringBuilder();
-            query.append("SELECT d.id as director_id,d.name,fod.film_id FROM directors d " +
+            query.append("SELECT d.id as director_id,d.name as director_name,fod.film_id FROM directors d " +
                     "LEFT JOIN films_of_directors fod ON d.id=fod.director_id WHERE fod.film_id IN (");
             for (int i = 0; i < filmIds.size(); i++) {
                 if (i == 0) {
@@ -393,6 +395,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
             film.getDirector().add(Director.builder()
                     .id(filmDirector.getDirectorId())
+                    .name(filmDirector.getDirectorName())
                     .build());
         }
     }
@@ -451,6 +454,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             return FilmDirector.builder()
                     .filmId(rs.getLong("film_id"))
                     .directorId(rs.getLong("director_id"))
+                    .directorName(rs.getString("director_name"))
                     .build();
         } catch (Exception e) {
             return null;

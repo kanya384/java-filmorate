@@ -23,7 +23,7 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
                                                                             WHEN rl.LIKE_TYPE = 'DISLIKE' THEN -1
                                                                             ELSE 0 END) AS useful
             FROM REVIEWS AS r
-            LEFT JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
+            LEFT OUTER JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
             WHERE r.id = ?
             GROUP BY r.ID;
             """;
@@ -34,9 +34,10 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
                                                                             WHEN rl.LIKE_TYPE = 'DISLIKE' THEN -1
                                                                             ELSE 0 END) AS useful
             FROM REVIEWS AS r
-            LEFT JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
+            LEFT OUTER JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
             WHERE r.film_id = ?
             GROUP BY r.ID
+            ORDER BY useful desc
             LIMIT ?;
             """;
     private static final String FIND_ALL_QUERY_WITHOUT_FILM_ID = """
@@ -45,8 +46,9 @@ public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStor
                                                                             WHEN rl.LIKE_TYPE = 'DISLIKE' THEN -1
                                                                             ELSE 0 END) AS useful
             FROM REVIEWS AS r
-            LEFT JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
+            LEFT OUTER JOIN REVIEW_LIKES rl ON rl.REVIEW_ID = r.id
             GROUP BY r.ID
+            ORDER BY useful desc
             LIMIT ?;
             """;
 
