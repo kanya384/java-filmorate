@@ -13,12 +13,14 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
+    private FilmService filmService;
     private FilmLikeService filmLikeService;
 
     @Override
@@ -110,44 +112,51 @@ public class UserServiceImpl implements UserService {
                 .map(UserMapper::mapToUserResponse).toList();
     }
 
-    //    @Override
-////    public List<FilmResponse> getRecommendationsFilms(long userId) {
-//    public List<Long> getRecommendationsFilms(long userId) {
-//        Map<Long, List<Long>> filmLikes = filmLikeService.getFilmLikes();
-//        return null;
-//    }
     @Override
-    public List<Long> getRecommendationsFilms(long userId) {
-        Map<Long, List<Long>> filmLikes = filmLikeService.getFilmLikes();
-        List<Long> likedFilmIds = filmLikes.getOrDefault(userId, new ArrayList<>());
-        List<Long> likedToUserFilmIds = List.of();
-        int count = 0;
+    public List<FilmResponse> getRecommendationsFilms(long userId) {
+        Map<Long, List<Long>> userFilms = filmLikeService.getFilmLikes();
+        List<Long> currentUserFilms = userFilms.getOrDefault(userId, new ArrayList<>());
+        if (currentUserFilms.isEmpty()) {
+            return new ArrayList<>(); // возвращаем пустой массив, если пользователь не имеет ни одного лайка
+        }
+        userFilms.remove(userId);
 
-        for (long i = 0; i < filmLikes.size(); i++) {
-            if (i + 1 == userId) {
-                continue;
-            }
-            List<Long> filmId = filmLikes.get(i);
-            int matches = 0;
+        TreeMap<Long, List<Long>> filmIntersections = new TreeMap<>(Comparator.reverseOrder());
 
-//            for (long j = 0; j < likedFilmIds.size(); j++) {
-//                for (long k = 0; k < filmId.size(); k++) {
-//                    if (likedFilmIds.get(j))
-//                }
-//            }
-            for (long j : likedFilmIds) {
-                for (long k : filmId) {
-                    if (j == k)
-                        matches++;
-                }
-            }
-
-            if (matches > count) {
-                likedToUserFilmIds = new ArrayList<>(filmId);
+        boolean hasSameLikes = false;
+        for (List<Long> value : userFilms.values()) {
+            long countMatches = countMatches(currentUserFilms, value);
+            if (countMatches > 0) {
+                hasSameLikes = true;
+                filmIntersections.put(countMatches, value);
             }
         }
 
-        return likedToUserFilmIds;
+        if (!hasSameLikes) {
+            return new ArrayList<>(); // возвращаем пустой массив, если не найдены пользователи с одинаковыми лайками
+        }
+
+        List<Long> bestUserFilms = filmIntersections.firstEntry().getValue();
+        bestUserFilms.removeAll(currentUserFilms);
+
+        List<FilmResponse> allFilms = filmService.findAll();
+        List<FilmResponse> recommendedFilms = allFilms.stream()
+                .filter(film -> bestUserFilms.contains(film.getId()))
+                .collect(Collectors.toList());
+
+        return recommendedFilms;
+    }
+
+    private long countMatches(List<Long> list1, List<Long> list2) {
+        Set<Long> set1 = new HashSet<>(list1); // Преобразуем первый список в множество
+        long count = 0;
+
+        for (Long item : list2) {
+            if (set1.contains(item)) { // Проверяем наличие элемента во множестве
+                count++;
+            }
+        }
+        return count;
     }
 }
 

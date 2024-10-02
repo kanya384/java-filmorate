@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 
 import java.util.List;
-import java.util.Map;
 
 public interface FilmService {
     List<FilmResponse> findAll();

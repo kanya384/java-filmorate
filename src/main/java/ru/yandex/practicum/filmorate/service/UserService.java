@@ -28,6 +28,6 @@ public interface UserService {
 
     List<UserResponse> getCommonFriendsOfUsers(long firstUserId, long secondUserId);
 
-//    List<FilmResponse> getRecommendationsFilms(long userId);
-    List<Long> getRecommendationsFilms(long userId);
+    List<FilmResponse> getRecommendationsFilms(long userId);
+
 }

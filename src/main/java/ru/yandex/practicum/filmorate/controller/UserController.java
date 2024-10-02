@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
 import ru.yandex.practicum.filmorate.service.UserService;
-
 import java.util.List;
 
 @RestController
@@ -70,9 +70,10 @@ public class UserController {
     public void removeUser(@PathVariable("id") long userId) {
         userService.removeUser(userId);
     }
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/recommendations")
-    public List<Long> recommendations(@PathVariable("id") long userId) {
+    public List<FilmResponse> recommendations(@PathVariable("id") long userId) {
         return userService.getRecommendationsFilms(userId);
     }
 }
