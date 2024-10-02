@@ -38,4 +38,8 @@ public interface FilmStorage {
     List<Film> getCommonFilms(long userId, long friendId);
 
     List<Film> search(String query, SearchFilter by);
+
+    List<Long> readUserIdsWithIntersectionsOnFilmLikes(long userId);
+
+    List<Film> readFilmsLikedByUsers(long... userIds);
 }
