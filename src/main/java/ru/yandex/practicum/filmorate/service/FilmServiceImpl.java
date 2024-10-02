@@ -11,12 +11,13 @@ import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
-import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.SearchFilter;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -199,5 +200,29 @@ public class FilmServiceImpl implements FilmService {
         return films.stream()
                 .map(FilmMapper::mapToFilmResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FilmResponse> readFilmRecommendations(long userId) {
+        List<Long> userIdsWithSimilarLikes = filmStorage.readUserIdsWithIntersectionsOnFilmLikes(userId);
+
+        List<Film> filmsLikedByUser = filmStorage.readFilmsLikedByUsers(userId);
+        Set<Long> alreadyLikedFilmsIds = new HashSet<>();
+        for (Film film : filmsLikedByUser) {
+            alreadyLikedFilmsIds.add(film.getId());
+        }
+
+        List<Film> filmsLikedByOtherUsers = filmStorage
+                .readFilmsLikedByUsers(userIdsWithSimilarLikes.stream().mapToLong(Long::longValue).toArray());
+
+        List<FilmResponse> response = new ArrayList<>();
+
+        for (Film film : filmsLikedByOtherUsers) {
+            if (!alreadyLikedFilmsIds.contains(film.getId())) {
+                response.add(FilmMapper.mapToFilmResponse(film));
+            }
+        }
+
+        return response;
     }
 }
