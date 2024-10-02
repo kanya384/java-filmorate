@@ -171,5 +171,14 @@ public class FilmServiceImpl implements FilmService {
         return filmStorage.getCommonFilms(userId, friendId).stream()
                 .map(FilmMapper::mapToFilmResponse)
                 .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<FilmResponse> getPopularFilmsByGenreAndByDate(int count, int genreId, int year) {
+        return filmStorage.getPopularFilmsByGenreAndByDate(count, genreId, year)
+                .stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .toList();
     }
 }

@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
@@ -62,19 +61,21 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
-    public List<FilmResponse> getPopularFilms(@RequestParam("count") Optional<Integer> count) {
-        if (count.isPresent()) {
-            return filmService.getPopularFilms(count.get());
-        } else {
-            return filmService.getPopularFilms(10);
-        }
+    public List<FilmResponse> getPopularFilms(@RequestParam(name = "count", defaultValue = "10") Integer count,
+                                              @RequestParam(required = false, defaultValue = "0") Integer genreId,
+                                              @RequestParam(required = false, defaultValue = "0") Integer year) {
+        if (genreId == 0 && year == 0)
+            return filmService.getPopularFilms(count);
+        else
+            return filmService.getPopularFilmsByGenreAndByDate(count, genreId, year);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/director/{directorId}")
     public List<FilmResponse> getSortedFilmsOfDirector(@PathVariable long directorId, @RequestParam String sortBy) {
-        return filmService.getSortedFilmsOfDirector(directorId,sortBy);
+        return filmService.getSortedFilmsOfDirector(directorId, sortBy);
     }
+
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/common")
