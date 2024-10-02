@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.SearchFilter;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
@@ -70,14 +72,40 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private static final String GET_COMMON_FILMS = "SELECT f.id, f.title, f.description," +
             " f.release_date, f.duration, f.rating_id AS mpa_id, " +
-            "mpa.name AS mpa_name, g.id AS genre_id, g.name AS genre_name, count(fl.user_id) AS likes " +
+            "mpa.name AS mpa_name, count(fl.user_id) AS likes " +
             "FROM films AS f " +
             "INNER JOIN film_likes AS fl ON fl.film_id = f.id " +
             "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
-            "LEFT JOIN film_genre AS fg ON fg.film_id = f.id " +
-            "LEFT JOIN genre AS g ON g.id = fg.genre_id " +
             "WHERE fl.FILM_ID IN (SELECT f.id FROM FILMS AS f LEFT JOIN FILM_LIKES fl2 ON fl2.film_id = f.id " +
             "WHERE fl2.user_id IN (?, ?) GROUP BY f.id HAVING COUNT(DISTINCT fl2.user_id) = 2) " +
+            "GROUP BY f.id " +
+            "ORDER BY likes DESC";
+    private static final String SEARCH_BY_DIRECTOR_QUERY = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
+            "mpa.name AS mpa_name, count(fl.user_id) AS likes " +
+            "FROM films AS f " +
+            "LEFT JOIN film_likes AS fl ON fl.film_id = f.id " +
+            "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+            "LEFT JOIN films_of_directors AS fd ON f.id = fd.film_id " +
+            "LEFT JOIN directors AS dir ON dir.id = fd.director_id " +
+            "WHERE LOWER(dir.name) LIKE LOWER(?) " +
+            "GROUP BY f.id " +
+            "ORDER BY likes DESC";
+    private static final String SEARCH_BY_DIRECTOR_AND_TITLE_QUERY = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
+            "mpa.name AS mpa_name, count(fl.user_id) AS likes " +
+            "FROM films AS f " +
+            "LEFT JOIN film_likes AS fl ON fl.film_id = f.id " +
+            "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+            "LEFT JOIN films_of_directors AS fd ON f.id = fd.film_id " +
+            "LEFT JOIN directors AS dir ON dir.id = fd.director_id " +
+            "WHERE LOWER(dir.name) LIKE LOWER(?) OR LOWER(f.title) LIKE LOWER(?) " +
+            "GROUP BY f.id, f.title, f.description, f.release_date, f.duration, mpa_id, mpa_name " +
+            "ORDER BY likes DESC";
+    private static final String SEARCH_BY_TITLE_QUERY = "SELECT f.id, f.title, f.description, f.release_date, f.duration, f.rating_id AS mpa_id," +
+            "mpa.name AS mpa_name, count(fl.user_id) AS likes " +
+            "FROM films AS f " +
+            "LEFT JOIN film_likes AS fl ON fl.film_id = f.id " +
+            "LEFT JOIN mpa_rating AS mpa ON mpa.id = f.rating_id " +
+            "WHERE LOWER(f.title) LIKE LOWER(?) " +
             "GROUP BY f.id " +
             "ORDER BY likes DESC";
 
@@ -202,7 +230,28 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
-        return findMany(GET_COMMON_FILMS, userId, friendId);
+        List<Film> films = findMany(GET_COMMON_FILMS, userId, friendId);
+        findGenresForFilms(films);
+        findDirectorsForFilms(films);
+        return films;
+    }
+
+    @Override
+    public List<Film> search(String query, SearchFilter by) {
+        String querySubstring = "%" + query + "%";
+        List<Film> films;
+        switch (by) {
+            case TITLE -> films = findMany(SEARCH_BY_TITLE_QUERY, querySubstring);
+            case DIRECTOR -> films = findMany(SEARCH_BY_DIRECTOR_QUERY, querySubstring);
+            case DIRECTOR_AND_TITLE ->
+                    films = findMany(SEARCH_BY_DIRECTOR_AND_TITLE_QUERY, querySubstring, querySubstring);
+            default -> {
+                return Collections.emptyList();
+            }
+        }
+        findGenresForFilms(films);
+        findDirectorsForFilms(films);
+        return films;
     }
 
     private void findGenresForFilms(List<Film> films) {

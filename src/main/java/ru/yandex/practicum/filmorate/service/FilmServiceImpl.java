@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchFilter;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.HashSet;
@@ -180,5 +181,21 @@ public class FilmServiceImpl implements FilmService {
                 .stream()
                 .map(FilmMapper::mapToFilmResponse)
                 .toList();
+    }
+
+    public List<FilmResponse> search(String query, List<String> by) {
+        List<Film> films;
+        if (by.contains("director") && by.contains("title")) {
+            films = filmStorage.search(query, SearchFilter.DIRECTOR_AND_TITLE);
+        } else if (by.contains("director")) {
+            films = filmStorage.search(query, SearchFilter.DIRECTOR);
+        } else if (by.contains("title")) {
+            films = filmStorage.search(query, SearchFilter.TITLE);
+        } else {
+            throw new BadRequestException("Неверно заданы фильтры поиска");
+        }
+        return films.stream()
+                .map(FilmMapper::mapToFilmResponse)
+                .collect(Collectors.toList());
     }
 }
