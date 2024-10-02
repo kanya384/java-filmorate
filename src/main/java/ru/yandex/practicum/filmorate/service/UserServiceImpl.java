@@ -72,7 +72,6 @@ public class UserServiceImpl implements UserService {
         }
         userStorage.addFriendToUser(firstUserId, secondUserId);
 
-        eventProcessor.add(firstUserId, secondUserId, EventType.FRIEND);
         eventProcessor.add(secondUserId, firstUserId, EventType.FRIEND);
     }
 
@@ -89,7 +88,6 @@ public class UserServiceImpl implements UserService {
         }
         userStorage.removeFriendOfUser(firstUserId, secondUserId);
 
-        eventProcessor.remove(firstUserId, secondUserId, EventType.FRIEND);
         eventProcessor.remove(secondUserId, firstUserId, EventType.FRIEND);
     }
 
