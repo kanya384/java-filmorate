@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchFilter;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,5 +23,23 @@ public interface FilmStorage {
 
     void removeLikeFromFilm(Long filmId, Long userId);
 
+    void removeFilmById(Long filmId);
+
     List<Film> getPopularFilms(int count);
+
+    List<Film> getPopularFilmsByGenreAndByDate(int count, int genreId, int year);
+
+    void addDirectorToFilm(long filmId, long directorId);
+
+    void deleteDirectorToFilm(long filmId);
+
+    List<Film> getSortedFilmsOfDirector(long directorId, String sortBy);
+
+    List<Film> getCommonFilms(long userId, long friendId);
+
+    List<Film> search(String query, SearchFilter by);
+
+    List<Long> readUserIdsWithIntersectionsOnFilmLikes(long userId);
+
+    List<Film> readFilmsLikedByUsers(long... userIds);
 }

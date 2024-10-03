@@ -4,9 +4,13 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.event.EventResponse;
+import ru.yandex.practicum.filmorate.dto.film.FilmResponse;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserResponse;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -16,11 +20,19 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     UserService userService;
+    FilmService filmService;
+    EventService eventService;
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<UserResponse> findAll() {
         return userService.findAll();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public UserResponse findUserById(@PathVariable("id") long userId) {
+        return userService.getUserById(userId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -59,4 +71,21 @@ public class UserController {
         return userService.getCommonFriendsOfUsers(firstUserId, secondUserId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public void removeUser(@PathVariable("id") long userId) {
+        userService.removeUser(userId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}/feed")
+    public List<EventResponse> readEventFeedForUser(@PathVariable("id") long userId) {
+        return eventService.readEventFeedForUser(userId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}/recommendations")
+    public List<FilmResponse> recommendations(@PathVariable("id") long userId) {
+        return filmService.readFilmRecommendations(userId);
+    }
 }
