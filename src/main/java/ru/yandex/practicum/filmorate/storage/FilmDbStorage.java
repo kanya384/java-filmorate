@@ -66,7 +66,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private static final String REMOVE_GENRE_FROM_FILM_QUERY = "DELETE FROM film_genre WHERE film_id = ?";
 
-    private static final String ADD_LIKE_TO_FILM_QUERY = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
+    private static final String ADD_LIKE_TO_FILM_QUERY = "MERGE INTO film_likes (film_id, user_id) VALUES (?, ?)";
 
     private static final String REMOVE_LIKE_FROM_FILM_QUERY = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
 
